@@ -29,6 +29,7 @@ react-hook-form, Tailwind CSS 4 with Radix primitives, Biome and Vitest. Node 22
 | `npm run db:push` | Apply `prisma/schema.prisma` to the database |
 | `npm run db:seed` | Add the sample data (safe to run again) |
 | `npm run db:studio` | Browse the database |
+| `npm run db:reset-demo` | Clear all monthly report data, keeping plants and users. Local databases only; ask before using `--not-local` |
 
 ## Tests
 

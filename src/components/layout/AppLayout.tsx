@@ -1,4 +1,12 @@
-import { AlertTriangle, ClipboardCheck, ClipboardList, Factory, Flame, type LucideIcon } from "lucide-react";
+import {
+	AlertTriangle,
+	ClipboardCheck,
+	ClipboardList,
+	Factory,
+	Flame,
+	LayoutDashboard,
+	type LucideIcon,
+} from "lucide-react";
 import { useRouter } from "next/router";
 import { type ReactNode, useEffect } from "react";
 
@@ -34,6 +42,7 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
+	{ href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: [ROLES.SUSTAINABILITY_HEAD, ROLES.REVIEWER] },
 	{ href: "/months", label: "Monthly data", icon: ClipboardList, roles: [ROLES.DATA_OWNER] },
 	{ href: "/review", label: "Review", icon: ClipboardCheck, roles: [ROLES.REVIEWER, ROLES.SUSTAINABILITY_HEAD] },
 	{ href: "/plants", label: "Plants", icon: Factory },

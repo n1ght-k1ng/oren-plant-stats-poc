@@ -5,8 +5,10 @@ import { FIRST_REPORTING_PERIOD } from "@/config/reporting";
 import { ROLES, type Role } from "@/lib/roles";
 import type { PlantTypeValue } from "@/lib/schemas/plant";
 import { recordCapacity } from "@/server/services/capacity";
+
 import { updatePlant } from "@/server/services/plant";
 import { getSessionUser } from "@/server/services/session";
+import { seedDemoMonths } from "./demo";
 
 const prisma = new PrismaClient();
 
@@ -240,12 +242,15 @@ async function main() {
 		seeded.push(await seedCompany(seed));
 	}
 	await seedExpansion(seeded[0].id);
+	// Demo months for Nimbus: April to October 2026. Existing months are left as they are.
+	const demo = await seedDemoMonths(prisma, seeded[0].id);
 	const [companies, plants, users] = await Promise.all([
 		prisma.company.count(),
 		prisma.plant.count(),
 		prisma.user.count(),
 	]);
 	console.log(`Seeded: ${companies} companies, ${plants} plants, ${users} users.`);
+	console.log(`Demo months: ${demo.created} created, ${demo.skipped} already there and left as they are.`);
 }
 
 main()

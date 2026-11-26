@@ -34,6 +34,7 @@ npx vitest run tests/plant.test.ts -t "plant.byId"  # tests matching a name
   ```
   Locally that database is in the `oren-plant-db` Docker container (Postgres 16, port 5442, which also holds the app's `plant_data`). For the deployed app, use a separate Neon branch for tests, never the production branch.
 - Work follows `docs/PLAN.md` step by step. Decisions, with their numbers (for example O5), are in `docs/DECISIONS.md`. `docs/BRIEF.md` is the original brief: do not edit it.
+- **Never run anything that can drop or reset data without asking the user first**, even when the tables look empty: `prisma db push --accept-data-loss`, `--force-reset`, `prisma migrate reset`, `DROP`/`TRUNCATE`, or deleting rows outside a test's own company. If `db push` warns about data loss, stop, show the warning and the row counts, and ask.
 - After a schema change, stop the dev server, run `db:push`, and restart. `scripts/ensure-prisma-client.mjs` regenerates the client when it is older than the schema.
 - Deploys to Vercel with Neon: `DATABASE_URL` is the pooled connection string, `DIRECT_URL` the direct one. `db:push` and `db:seed` are run by hand against that database.
 

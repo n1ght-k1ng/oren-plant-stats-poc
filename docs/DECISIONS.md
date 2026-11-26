@@ -287,11 +287,11 @@ Entries keep their numbers so that commits, tests and the write-up can refer to 
 - N/A lines are kept so the approval lists every item, but count nothing.
 - The shape is `approvalLines` in `src/lib/schemas/report.ts`. A test checks that the lines add up exactly to the stored Scope 1 and Scope 2 totals.
 
-**F3. Factor years.** **PROPOSED**
-- `src/lib/factors.ts` has no year field, so step 2.5 adds one to each factor, taken from its source:
-  - IPCC fuel factors: `2006`.
+**F3. Factor years.** **DECIDED**
+- `src/lib/factors.ts` has no year field, so step 2.5 adds one to each factor:
+  - IPCC fuel factors (coal, petroleum coke, diesel, furnace oil): `2006`.
   - CEA grid factor: `FY 2025-26` (version 22.0, August 2026).
-  - **GCCA clinker factor: unknown.** Its source names the protocol but no version or year. Needs a decision: find the version, or record "GCCA protocol, version not stated".
+  - GCCA clinker factor: **`version not stated in starter`**. That is all the source says. Nobody should look up or guess a year. It is an open question for the write-up.
 
 **F4. History order.** **DECIDED**
 - Each review event has a `sequence` number (1, 2, 3, ...) within its month, unique per month.

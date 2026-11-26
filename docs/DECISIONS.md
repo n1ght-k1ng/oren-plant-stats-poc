@@ -351,7 +351,7 @@ Enforced on the server by `requirePermission` (`src/server/helpers/permissions.t
 
 **V2. Which quarter opens.** **DECIDED** The latest quarter with any month in it, otherwise the current quarter. Any quarter from the first reporting month to now can be chosen.
 
-**V3. Who sees it.** **PROPOSED** The Head of Sustainability and reviewers. Data owners don't: it covers every plant's approved CO2, which they don't need.
+**V3. Who sees it.** **DECIDED** The Head of Sustainability and reviewers. Data owners don't: it covers every plant's approved CO2, which they don't need.
 
 **E1. End-to-end tests.** Playwright runs Flows 1 to 4 through the user switcher, both locally and against the deployed URL. **DECIDED**
 

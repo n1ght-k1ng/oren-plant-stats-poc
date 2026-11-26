@@ -299,6 +299,32 @@ Entries keep their numbers so that commits, tests and the write-up can refer to 
 - It also means two people acting on the same month at the same moment cannot both succeed.
 - **Every action carries the month's version as the user loaded it.** If the month changed since, or two events ever claim the same sequence number, the user gets a `CONFLICT` (HTTP 409): "Someone else just updated this month. Please reload to see their changes." Never a server error. Implemented in `src/server/services/transition.ts`.
 
+### Permission rules (step 1.4)
+
+Enforced on the server by `requirePermission` (`src/server/helpers/permissions.ts`), using the pure rules in `src/lib/permissions.ts`. The table uses the seed users, for plant P05, whose data owners are Karthik and Priya. Priya is also a reviewer.
+
+| Action | Ravi (P01 owner) | Karthik (P05 owner) | Priya (P05 owner and reviewer) | Vikram (reviewer) | Meera (Head) | Rohan (Kestrel Head) |
+|---|---|---|---|---|---|---|
+| View the month | Yes | Yes | Yes | Yes | Yes | Not found |
+| Open, edit or submit | No | Yes, as data owner | Yes, as data owner | No | No | Not found |
+| Approve or send back | No | No | **No, owns P05** | Yes, as reviewer | Yes, as Head | Not found |
+| Reopen | No | No | No | No | Yes, as Head | Not found |
+
+- **Another company's month** comes back as NOT_FOUND, so its existence is never revealed. Every other refusal is FORBIDDEN, with the reason in words.
+- For P01, Priya **can** approve, because she owns P05's data, not P01's.
+
+**R1. Viewing.** Anyone in the company can read any of its months, read-only, like the plant register today. **PROPOSED**
+- *Alternative:* data owners see only their own plants' months.
+
+**R2. Reopening your own plant.** A Head who is also a data owner of a plant cannot reopen that plant's month, matching U3 for approving. **PROPOSED**
+- No seed user is affected: Meera owns no plants.
+
+**R3. Holding both reviewer and Head roles.** That person is recorded as reviewer when approving or sending back, and as Head when reopening. **PROPOSED**
+- No seed user holds both.
+
+**R4. What makes someone a data owner of a plant.** Being linked to the plant (`Plant.dataOwners`) lets someone enter and submit, recorded as data owner. Holding the `DATA_OWNER` role without the link does not. **PROPOSED**
+- This keeps it to one source of truth: the plant's owner list.
+
 **E1. End-to-end tests.** Playwright runs Flows 1 to 4 through the user switcher, both locally and against the deployed URL. **DECIDED**
 
 **H1. The month history screen is core v1**, not optional. It shows every value as entered and converted, every change, every status change with its comment and role, flagged-approval explanations, and the factors used. **DECIDED**

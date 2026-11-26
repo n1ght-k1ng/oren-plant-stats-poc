@@ -144,3 +144,44 @@ test.describe("U23: a month the Head reopens says Reopened, not Sent back", () =
 		await expect(page.getByTestId(`month-row-${plant}-${period}`)).toContainText("Reopened");
 	});
 });
+
+test.describe("U26: the review queue works on a 390 px phone", () => {
+	test("each waiting month is a card whose Review button is fully on screen and opens the month", async ({
+		browser,
+	}) => {
+		// A month waiting for review.
+		const desktop = await browser.newPage();
+		await signIn(desktop, run.owner.email);
+		await desktop.getByTestId(`month-start-${run.plants.loop}-2026-07`).click();
+		await desktop.waitForURL(/\/months\/[a-z0-9]+$/);
+		for (const [key, value] of [
+			["coal", "35000"],
+			["petcoke", "7600"],
+			["diesel", "160000"],
+			["grid_power", "4500"],
+			["clinker", "285800"],
+		]) {
+			await desktop.getByTestId(`line-${key}-value`).fill(value);
+		}
+		await desktop.getByTestId("month-submit-open").click();
+		await desktop.getByTestId("submit-not-used-furnace_oil").check();
+		await desktop.getByTestId("submit-confirm").click();
+		await expect(desktop.getByTestId("status-submitted")).toBeVisible();
+		await desktop.close();
+
+		const phone = await browser.newPage({ viewport: { width: 390, height: 844 } });
+		await signIn(phone, run.reviewer.email);
+		await phone.waitForURL("**/review");
+		const button = phone.getByTestId(`review-card-open-${run.plants.loop}-2026-07`);
+		await expect(button).toBeVisible();
+		const box = await button.boundingBox();
+		expect(box).not.toBeNull();
+		expect((box?.x ?? 0) >= 0 && (box?.x ?? 0) + (box?.width ?? 0) <= 390).toBe(true);
+		expect(await phone.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+		await expect(phone.getByTestId(`review-card-${run.plants.loop}-2026-07`)).toContainText("2 flags");
+		await button.click();
+		await phone.waitForURL(/\/months\/[a-z0-9]+$/);
+		await expect(phone.getByTestId("review-panel")).toBeVisible();
+		await phone.close();
+	});
+});

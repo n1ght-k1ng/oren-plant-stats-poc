@@ -296,7 +296,8 @@ Entries keep their numbers so that commits, tests and the write-up can refer to 
 **F4. History order.** **DECIDED**
 - Each review event has a `sequence` number (1, 2, 3, ...) within its month, unique per month.
 - The history is ordered by it, not by timestamp, which can tie within a millisecond.
-- It also means two people acting on the same month at the same moment cannot both succeed: the second is rejected and must reload.
+- It also means two people acting on the same month at the same moment cannot both succeed.
+- **Every action carries the month's version as the user loaded it.** If the month changed since, or two events ever claim the same sequence number, the user gets a `CONFLICT` (HTTP 409): "Someone else just updated this month. Please reload to see their changes." Never a server error. Implemented in `src/server/services/transition.ts`.
 
 **E1. End-to-end tests.** Playwright runs Flows 1 to 4 through the user switcher, both locally and against the deployed URL. **DECIDED**
 

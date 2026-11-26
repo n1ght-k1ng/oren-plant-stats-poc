@@ -27,6 +27,8 @@ export const lineInput = z.object({
 	value: z.string().max(40),
 	unit: z.string().max(20),
 	note: z.string().max(1000).nullable(),
+	/** Set when the value came from an import into this month (D16); the line is then marked as imported. */
+	uploadId: z.string().nullable().optional(),
 });
 export type LineInput = z.infer<typeof lineInput>;
 

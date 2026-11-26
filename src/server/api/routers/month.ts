@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { monthAudit } from "@/lib/schemas/audit";
+import { importInput, importResult } from "@/lib/schemas/import";
 import {
 	monthByIdInput,
 	monthDetail,
@@ -12,6 +13,7 @@ import {
 } from "@/lib/schemas/month";
 import { protectedProcedure, router } from "@/server/api/trpc";
 import { getAudit } from "@/server/services/audit";
+import { importIntoMonth } from "@/server/services/import";
 import { getMonth, listMyMonths, openMonth, saveLines, submitMonth } from "@/server/services/month";
 
 /** Flow 1: a plant's month, from opening to submission. Rules live in the service; this only wires them up. */
@@ -33,6 +35,12 @@ export const monthRouter = router({
 		.input(monthByIdInput)
 		.output(monthAudit)
 		.query(({ ctx, input }) => getAudit(ctx.db, ctx.user, input.reportId)),
+
+	/** Reads a file or paste and stores it; returns what it proposes. Never changes the month (D9). */
+	import: protectedProcedure
+		.input(importInput)
+		.output(importResult)
+		.mutation(({ ctx, input }) => importIntoMonth(ctx.db, ctx.user, input)),
 
 	save: protectedProcedure
 		.input(saveLinesInput)

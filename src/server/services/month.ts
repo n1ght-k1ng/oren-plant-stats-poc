@@ -411,6 +411,19 @@ export async function saveLines(
 			throw monthConflict();
 		}
 
+		const uploadIds = [...new Set(input.lines.flatMap((line) => (line.uploadId ? [line.uploadId] : [])))];
+		if (uploadIds.length > 0) {
+			const found = await tx.upload.count({
+				where: companyScope(user, { id: { in: uploadIds }, reportId: report.id }),
+			});
+			if (found !== uploadIds.length) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "That import belongs to a different month. Import the file again here.",
+				});
+			}
+		}
+
 		const updates = input.lines.map((line) => ({ line, update: readLine(line, report.plantType) }));
 		const errors = updates.flatMap(({ update }) => (typeof update === "string" ? [update] : []));
 		if (errors.length > 0) {
@@ -430,16 +443,20 @@ export async function saveLines(
 			const before = describe({ ...stored, value: stored.value ? toDecimalString(stored.value) : null });
 			const after = describe(update);
 			if (before !== after) {
-				changes[label] = { from: before, to: after };
+				changes[label] = { from: before, to: line.uploadId ? `${after} (imported)` : after };
 			}
 			if ((stored.note ?? null) !== update.note) {
 				changes[`${label} note`] = { from: stored.note, to: update.note };
 			}
-			if (before !== after || (stored.note ?? null) !== update.note) {
+			const source = line.uploadId ? ("IMPORT" as const) : ("FORM" as const);
+			if (before !== after || (stored.note ?? null) !== update.note || stored.uploadId !== (line.uploadId ?? null)) {
 				await tx.reportLine.update({
 					where: { id: stored.id },
-					data: { ...update, source: "FORM", uploadId: null, updatedById: user.id },
+					data: { ...update, source, uploadId: line.uploadId ?? null, updatedById: user.id },
 				});
+				if (line.uploadId && before === after) {
+					changes[`${label} source`] = { from: "typed", to: "imported" };
+				}
 			}
 		}
 

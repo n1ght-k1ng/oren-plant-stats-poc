@@ -10,6 +10,7 @@ import { ITEMS } from "@/config/items";
 import { sumDecimals, toDecimalString } from "@/lib/decimal";
 import { checkPermission } from "@/lib/permissions";
 import type { MonthAudit, TimelineEntry, TracedLine } from "@/lib/schemas/audit";
+import { importMapping } from "@/lib/schemas/import";
 import { type SubmittedLine, approvalLines, checkFlags, submittedLines } from "@/lib/schemas/report";
 import type { SessionUser } from "@/lib/schemas/session";
 import { diffSubmissions } from "@/lib/submissionDiff";
@@ -20,7 +21,15 @@ import { permissionPlant, plantRef, plantSelect } from "@/server/services/month"
 
 const ROLE_FOR_EDITS = "DATA_OWNER";
 
-function traceLines(approved: ReturnType<typeof approvalLines.parse>, submitted: SubmittedLine[]): TracedLine[] {
+function uploadLabel(upload: { kind: string; filename: string | null }): string {
+	return upload.kind === "PASTE" ? "Pasted table" : (upload.filename ?? "Uploaded file");
+}
+
+function traceLines(
+	approved: ReturnType<typeof approvalLines.parse>,
+	submitted: SubmittedLine[],
+	uploadNames: Map<string, string>,
+): TracedLine[] {
 	return ITEMS.flatMap((item): TracedLine[] => {
 		const line = approved.find((candidate) => candidate.itemKey === item.key);
 		if (!line) {
@@ -34,6 +43,7 @@ function traceLines(approved: ReturnType<typeof approvalLines.parse>, submitted:
 			typedUnit: typed?.enteredUnit ?? null,
 			note: typed?.note ?? null,
 			source: typed?.source ?? null,
+			importedFrom: typed?.uploadId ? (uploadNames.get(typed.uploadId) ?? "An import") : null,
 			enteredBy: typed?.enteredBy?.name ?? null,
 			enteredAt: typed?.enteredAt ? new Date(typed.enteredAt) : null,
 		};
@@ -77,6 +87,7 @@ export async function getAudit(db: Db, user: SessionUser, reportId: string): Pro
 			plant: { select: plantSelect },
 			events: { orderBy: { sequence: "asc" }, include: { actor: { select: { name: true } } } },
 			approvals: { orderBy: { createdAt: "desc" } },
+			uploads: { orderBy: { createdAt: "asc" }, include: { uploadedBy: { select: { name: true } } } },
 		},
 	});
 	if (!report) {
@@ -96,6 +107,7 @@ export async function getAudit(db: Db, user: SessionUser, reportId: string): Pro
 		: [];
 
 	const submissions = report.events.filter((event) => event.action === "SUBMIT");
+	const uploadNames = new Map(report.uploads.map((upload) => [upload.id, uploadLabel(upload)]));
 	const frozenLines = (event: (typeof report.events)[number] | undefined) =>
 		event?.lines ? submittedLines.parse(event.lines) : [];
 
@@ -116,7 +128,7 @@ export async function getAudit(db: Db, user: SessionUser, reportId: string): Pro
 			totalKgCo2: sumDecimals([scope1, scope2]).toFixed(),
 			submittedBy: submission?.actor.name ?? null,
 			submittedAt: submission?.createdAt ?? null,
-			lines: traceLines(approvalLines.parse(snapshot.lines), frozenLines(submission)),
+			lines: traceLines(approvalLines.parse(snapshot.lines), frozenLines(submission), uploadNames),
 		};
 	});
 	const current = report.status === "APPROVED" ? (approvals[0] ?? null) : null;
@@ -166,6 +178,30 @@ export async function getAudit(db: Db, user: SessionUser, reportId: string): Pro
 		approval: current,
 		earlierApprovals: earlier,
 		timeline,
+		uploads: editsVisible
+			? report.uploads.map((upload) => {
+					const mapping = importMapping.parse(upload.mapping);
+					return {
+						id: upload.id,
+						label: uploadLabel(upload),
+						uploadedBy: upload.uploadedBy.name,
+						at: upload.createdAt,
+						sizeBytes: upload.sizeBytes,
+						content: upload.content,
+						headerLine: mapping.headerLine,
+						rows: mapping.rows.map(({ line, itemText, quantityText, unitText, itemKey, status, message }) => ({
+							line,
+							itemText,
+							quantityText,
+							unitText,
+							itemKey,
+							status,
+							message,
+						})),
+						warnings: mapping.warnings,
+					};
+				})
+			: [],
 		draftEditsHidden: !editsVisible,
 	};
 }

@@ -30,6 +30,8 @@ export const tracedLine = z.object({
 	kgCo2: decimalString.nullable(),
 	note: z.string().nullable(),
 	source: z.enum(["FORM", "IMPORT"]).nullable(),
+	/** The file the value was imported from, when it was (D16). */
+	importedFrom: z.string().nullable(),
 	enteredBy: z.string().nullable(),
 	enteredAt: z.date().nullable(),
 });
@@ -74,6 +76,30 @@ export const monthAudit = z.object({
 	/** Approvals later reopened: kept, never counted. Newest first. */
 	earlierApprovals: z.array(approval.omit({ lines: true })),
 	timeline: z.array(timelineEntry),
+	/** Every import into the month, with the original text and how it was read (D16). Hidden with draft edits (R1). */
+	uploads: z.array(
+		z.object({
+			id: z.string(),
+			label: z.string(),
+			uploadedBy: z.string(),
+			at: z.date(),
+			sizeBytes: z.number().int(),
+			content: z.string(),
+			headerLine: z.number().int().nullable(),
+			rows: z.array(
+				z.object({
+					line: z.number().int(),
+					itemText: z.string(),
+					quantityText: z.string(),
+					unitText: z.string(),
+					itemKey: z.string().nullable(),
+					status: z.string(),
+					message: z.string().nullable(),
+				}),
+			),
+			warnings: z.array(z.string()),
+		}),
+	),
 	/** True when edits to a draft are left out of the timeline for this user (R1). */
 	draftEditsHidden: z.boolean(),
 });

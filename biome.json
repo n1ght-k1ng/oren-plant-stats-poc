@@ -9,6 +9,7 @@
 			"next-env.d.ts",
 			"src/styles/**",
 			"samples/**",
+			"docs/ux/**",
 			"test-results",
 			"playwright-report"
 		]

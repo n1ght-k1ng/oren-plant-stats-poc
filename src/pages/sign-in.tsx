@@ -76,7 +76,7 @@ export default function SignInPage() {
 										disabled={switchUser.isLoading}
 										onClick={() => switchUser.mutate({ userId: member.id })}
 										data-testid={`sign-in-${member.email}`}
-										className="flex w-full items-center gap-3 px-5 py-3 text-left outline-none hover:bg-surface-hover focus-visible:bg-surface-hover disabled:cursor-wait"
+										className="flex w-full items-center gap-3 px-5 py-3 text-left outline-none hover:bg-surface-hover focus-visible:bg-surface-hover focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-border-focus disabled:cursor-wait"
 									>
 										<span className="flex min-w-0 flex-1 flex-col">
 											<span className="text-sm font-medium text-text-primary">{member.name}</span>

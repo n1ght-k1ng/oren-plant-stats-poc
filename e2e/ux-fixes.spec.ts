@@ -216,3 +216,17 @@ test.describe("U2: what needs doing is on the first screen, with counts in the s
 		}
 	});
 });
+
+test.describe("A2: keyboard focus is visible on the sign-in list", () => {
+	test("tabbing to a sample user draws a focus ring", async ({ page }) => {
+		await page.goto("/sign-in");
+		const first = page.locator('[data-testid^="sign-in-"]').first();
+		await expect(first).toBeVisible();
+		await first.focus();
+		await page.keyboard.press("Tab");
+		await page.keyboard.press("Shift+Tab");
+		const ring = await first.evaluate((el) => getComputedStyle(el).boxShadow);
+		expect(ring).not.toBe("none");
+		expect(ring).toMatch(/inset/);
+	});
+});

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { MonthEditor } from "@/components/months/MonthEditor";
 import { MonthReadOnly } from "@/components/months/MonthReadOnly";
+import { ReviewPanel } from "@/components/months/ReviewPanel";
 import { StatusBadge } from "@/components/months/StatusBadge";
 import { OrenButton } from "@/components/ui/OrenButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +21,7 @@ import { PageHeader, PageHeaderDescription, PageHeaderHeading, PageHeaderRow } f
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDateTime } from "@/lib/format";
 import { periodLabel } from "@/lib/periods";
-import { ROLE_LABELS, type Role } from "@/lib/roles";
+import { ROLES, ROLE_LABELS, type Role, hasRole } from "@/lib/roles";
 import type { MonthDetail } from "@/lib/schemas/month";
 import { STATUS_LABELS } from "@/lib/workflow";
 import { api } from "@/utils/api";
@@ -45,6 +46,19 @@ function History({ month }: { month: MonthDetail }) {
 						{event.actorRole in ROLE_LABELS ? ` (${ROLE_LABELS[event.actorRole as Role]})` : ""}
 					</span>
 					{event.comment && <span className="text-text-primary">"{event.comment}"</span>}
+					{event.changes.length > 0 && (
+						<ul
+							className="mt-1 flex flex-col gap-0.5 text-text-primary"
+							data-testid={`history-changes-${event.sequence}`}
+						>
+							{event.changes.map((change) => (
+								<li key={`${change.label}`}>
+									Changed {change.label.charAt(0).toLowerCase() + change.label.slice(1)} from {change.from} to{" "}
+									<span className="font-medium">{change.to}</span>
+								</li>
+							))}
+						</ul>
+					)}
 					<span className="text-xs text-text-secondary">
 						{formatDateTime(event.createdAt)} · now {STATUS_LABELS[event.toStatus].toLowerCase()}
 					</span>
@@ -58,6 +72,7 @@ export default function MonthPage() {
 	const router = useRouter();
 	const reportId = typeof router.query.id === "string" ? router.query.id : "";
 	const month = api.month.byId.useQuery({ reportId }, { enabled: reportId !== "", retry: false });
+	const me = api.session.me.useQuery();
 	const [conflict, setConflict] = useState<string | null>(null);
 
 	async function reload() {
@@ -103,15 +118,18 @@ export default function MonthPage() {
 	}
 
 	const data = month.data;
+	// Reviewers come here from the review queue; data owners from their months.
+	const fromReview = !data.canEdit && me.data ? hasRole(me.data, ROLES.REVIEWER, ROLES.SUSTAINABILITY_HEAD) : false;
+	const back = fromReview ? { href: "/review", label: "Review" } : { href: "/months", label: "Monthly data" };
 	return (
 		<AppLayout title={`${data.plant.code} ${periodLabel(data.period)}`}>
 			<Link
-				href="/months"
+				href={back.href}
 				className="mb-4 inline-flex items-center gap-1.5 text-sm text-text-link hover:text-text-link-hover"
 				data-testid="month-back"
 			>
 				<ArrowLeft className="size-4" aria-hidden />
-				Monthly data
+				{back.label}
 			</Link>
 			<PageHeader bordered>
 				<PageHeaderRow>
@@ -157,7 +175,22 @@ export default function MonthPage() {
 				</div>
 			)}
 
-			{data.canEdit ? <MonthEditor month={data} onConflict={setConflict} /> : <MonthReadOnly month={data} />}
+			{data.canEdit ? (
+				<MonthEditor month={data} onConflict={setConflict} />
+			) : (
+				<MonthReadOnly
+					month={data}
+					aside={
+						data.review.canReview ? (
+							<ReviewPanel month={data} onConflict={setConflict} />
+						) : data.review.blockedReason ? (
+							<Card data-testid="review-blocked">
+								<CardContent className="pt-5 text-sm text-text-secondary">{data.review.blockedReason}</CardContent>
+							</Card>
+						) : undefined
+					}
+				/>
+			)}
 
 			<Card className="mt-6">
 				<CardHeader>

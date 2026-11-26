@@ -1,4 +1,4 @@
-import { AlertTriangle, ClipboardList, Factory, Flame } from "lucide-react";
+import { AlertTriangle, ClipboardCheck, ClipboardList, Factory, Flame, type LucideIcon } from "lucide-react";
 import { useRouter } from "next/router";
 import { type ReactNode, useEffect } from "react";
 
@@ -22,10 +22,20 @@ import {
 	useShowLabels,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ROLES, type Role, hasRole } from "@/lib/roles";
 import { api } from "@/utils/api";
 
-const NAV_ITEMS = [
-	{ href: "/months", label: "Monthly data", icon: ClipboardList },
+type NavItem = {
+	href: string;
+	label: string;
+	icon: LucideIcon;
+	/** Shown only to users with one of these roles. The pages enforce access themselves. */
+	roles?: Role[];
+};
+
+const NAV_ITEMS: NavItem[] = [
+	{ href: "/months", label: "Monthly data", icon: ClipboardList, roles: [ROLES.DATA_OWNER] },
+	{ href: "/review", label: "Review", icon: ClipboardCheck, roles: [ROLES.REVIEWER, ROLES.SUSTAINABILITY_HEAD] },
 	{ href: "/plants", label: "Plants", icon: Factory },
 	{ href: "/factors", label: "Emission factors", icon: Flame },
 ];
@@ -63,7 +73,7 @@ export function AppLayout({ title, children }: { title: string; children: ReactN
 				</SidebarHeader>
 				<SidebarContent>
 					<SidebarGroup>
-						{NAV_ITEMS.map((item) => (
+						{NAV_ITEMS.filter((item) => !item.roles || (me.data && hasRole(me.data, ...item.roles))).map((item) => (
 							<SidebarMenuButton
 								key={item.href}
 								href={item.href}

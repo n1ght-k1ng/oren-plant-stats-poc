@@ -128,6 +128,31 @@ export async function approveMonth(
 	});
 }
 
+/**
+ * Reopens an approved month (O2): the Head of Sustainability only, with a reason. It goes back to the data
+ * owners as RETURNED, so it drops out of approved figures until approved again. Earlier approvals and their
+ * snapshots are kept for the auditor.
+ */
+export async function reopenMonth(
+	db: PrismaClient,
+	user: SessionUser,
+	input: { reportId: string; expectedVersion: number; comment: string },
+) {
+	return inMonthTransaction(db, async (tx) => {
+		const report = await loadForChange(tx, user, input.reportId);
+		const { actingRole } = requirePermission(user, permissionPlant(report.plant), "reopen");
+		const result = await recordTransition(tx, user, {
+			reportId: report.id,
+			expectedVersion: input.expectedVersion,
+			action: "reopen",
+			actorRole: actingRole ?? ROLES.SUSTAINABILITY_HEAD,
+			comment: input.comment,
+			hasFlags: false,
+		});
+		return { status: result.status, version: result.version };
+	});
+}
+
 /** Sends a submitted month back to its data owners with a comment saying what needs fixing (O12). */
 export async function sendBackMonth(
 	db: PrismaClient,

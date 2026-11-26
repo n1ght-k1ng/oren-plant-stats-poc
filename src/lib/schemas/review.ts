@@ -27,6 +27,13 @@ export const approveInput = z.object({
 	comment: z.string().max(2000).nullable(),
 });
 
+export const reopenInput = z.object({
+	reportId: z.string().min(1),
+	expectedVersion: z.number().int().positive(),
+	/** Required: why the approved month is reopened (O2). */
+	comment: z.string().max(2000),
+});
+
 export const sendBackInput = z.object({
 	reportId: z.string().min(1),
 	expectedVersion: z.number().int().positive(),

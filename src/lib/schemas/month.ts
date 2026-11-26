@@ -98,7 +98,11 @@ export const monthDetail = z.object({
 	/** Live while being edited; as frozen at the latest submission otherwise (U2). */
 	flags: z.array(checkFlag),
 	/** The latest send-back or reopen comment, shown at the top of a returned month. */
-	returnComment: z.object({ text: z.string(), by: z.string(), at: z.date() }).nullable(),
+	returnComment: z
+		.object({ action: z.enum(["SEND_BACK", "REOPEN"]), text: z.string(), by: z.string(), at: z.date() })
+		.nullable(),
+	/** For an approved month: whether this user may reopen it (O2, R2). */
+	canReopen: z.boolean(),
 	/** For a submitted month: whether this user may approve or send it back, or why not (O4, U3). */
 	review: z.object({ canReview: z.boolean(), blockedReason: z.string().nullable() }),
 	history: z.array(

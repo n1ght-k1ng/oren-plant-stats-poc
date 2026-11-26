@@ -313,3 +313,57 @@ describe("last month's values beside this month's (3.5b)", () => {
 		});
 	});
 });
+
+describe("reopening an approved month (3.7)", () => {
+	async function approvedMonth() {
+		const plant = await newPlant(2_500_000);
+		const reportId = await submitted(plant.id, "2026-10", P04_LINES);
+		await callerFor(reviewer).review.approve({ reportId, expectedVersion: 3, comment: null });
+		return reportId;
+	}
+
+	it("is for the Head of Sustainability only, and needs a reason", async () => {
+		const reportId = await approvedMonth();
+		expect((await callerFor(head).month.byId({ reportId })).canReopen).toBe(true);
+		expect((await callerFor(reviewer).month.byId({ reportId })).canReopen).toBe(false);
+		expect(
+			await rejection(callerFor(reviewer).review.reopen({ reportId, expectedVersion: 4, comment: "Wrong bill" })),
+		).toMatchObject({ code: "FORBIDDEN", message: "Only the Head of Sustainability can reopen an approved month." });
+		expect(
+			await rejection(callerFor(head).review.reopen({ reportId, expectedVersion: 4, comment: " " })),
+		).toMatchObject({
+			code: "BAD_REQUEST",
+			message: "Add a reason for reopening this month.",
+		});
+	});
+
+	it("returns it to the owner as RETURNED with the reason, keeps the earlier approval, and approves again", async () => {
+		const reportId = await approvedMonth();
+		await callerFor(head).review.reopen({
+			reportId,
+			expectedVersion: 4,
+			comment: "The auditor found the diesel bill was for two months.",
+		});
+
+		const returned = await callerFor(owner).month.byId({ reportId });
+		expect(returned).toMatchObject({
+			status: "RETURNED",
+			canEdit: true,
+			returnComment: { action: "REOPEN", text: "The auditor found the diesel bill was for two months.", by: "Meera" },
+		});
+		const reopenEvent = await prisma.reviewEvent.findFirstOrThrow({ where: { reportId, action: "REOPEN" } });
+		expect(reopenEvent).toMatchObject({
+			fromStatus: "APPROVED",
+			toStatus: "RETURNED",
+			actorRole: "SUSTAINABILITY_HEAD",
+		});
+		expect(await prisma.approvalSnapshot.count({ where: { reportId } })).toBe(1);
+
+		await callerFor(owner).month.save({ reportId, expectedVersion: 5, lines: [line("diesel", "47.5", "kL")] });
+		await callerFor(owner).month.submit({ reportId, expectedVersion: 6, confirmNotUsed: [] });
+		await callerFor(reviewer).review.approve({ reportId, expectedVersion: 7, comment: null });
+
+		const snapshots = await prisma.approvalSnapshot.findMany({ where: { reportId }, orderBy: { createdAt: "asc" } });
+		expect(snapshots.map((snapshot) => snapshot.scope1KgCo2.toFixed())).toEqual(["85251600", "85124300"]);
+	});
+});

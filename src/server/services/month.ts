@@ -281,9 +281,15 @@ export async function getMonth(db: Db, user: SessionUser, reportId: string): Pro
 		flags: !values.allowed ? [] : canEditLines(report.status) ? live.flags : frozenFlags,
 		returnComment:
 			report.status === "RETURNED" && lastReturn?.comment
-				? { text: lastReturn.comment, by: lastReturn.actor.name, at: lastReturn.createdAt }
+				? {
+						action: lastReturn.action === "REOPEN" ? ("REOPEN" as const) : ("SEND_BACK" as const),
+						text: lastReturn.comment,
+						by: lastReturn.actor.name,
+						at: lastReturn.createdAt,
+					}
 				: null,
 		review,
+		canReopen: report.status === "APPROVED" && checkPermission(user, plant, "reopen").allowed,
 		history: report.events.map((event) => {
 			// A resubmission lists what changed since the submission before it.
 			const earlier = report.events.filter(

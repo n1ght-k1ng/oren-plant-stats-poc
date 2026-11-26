@@ -6,6 +6,7 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { MonthEditor } from "@/components/months/MonthEditor";
 import { MonthReadOnly } from "@/components/months/MonthReadOnly";
+import { ReopenPanel } from "@/components/months/ReopenPanel";
 import { ReviewPanel } from "@/components/months/ReviewPanel";
 import { StatusBadge } from "@/components/months/StatusBadge";
 import { OrenButton } from "@/components/ui/OrenButton";
@@ -168,7 +169,9 @@ export default function MonthPage() {
 				>
 					<MessageSquareWarning className="mt-0.5 size-4 shrink-0 text-feedback-warning-fg" aria-hidden />
 					<div className="flex flex-col gap-1">
-						<span className="font-medium text-text-primary">Sent back by {data.returnComment.by}</span>
+						<span className="font-medium text-text-primary">
+							{data.returnComment.action === "REOPEN" ? "Reopened" : "Sent back"} by {data.returnComment.by}
+						</span>
 						<span className="text-text-primary">"{data.returnComment.text}"</span>
 						<span className="text-xs text-text-secondary">{formatDateTime(data.returnComment.at)}</span>
 					</div>
@@ -183,6 +186,8 @@ export default function MonthPage() {
 					aside={
 						data.review.canReview ? (
 							<ReviewPanel month={data} onConflict={setConflict} />
+						) : data.canReopen ? (
+							<ReopenPanel month={data} onConflict={setConflict} />
 						) : data.review.blockedReason ? (
 							<Card data-testid="review-blocked">
 								<CardContent className="pt-5 text-sm text-text-secondary">{data.review.blockedReason}</CardContent>

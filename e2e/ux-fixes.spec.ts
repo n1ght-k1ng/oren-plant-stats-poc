@@ -230,3 +230,31 @@ test.describe("A2: keyboard focus is visible on the sign-in list", () => {
 		expect(ring).toMatch(/inset/);
 	});
 });
+
+test.describe("U6: the month says whether it's saved, and Submit says what's missing", () => {
+	test("save state reads as words; Submit lists missing items, each taking you to its line", async ({ page }) => {
+		await signIn(page, run.owner.email);
+		await page.getByTestId(`todo-action-${run.plants.loop}-2026-06`).click();
+		await page.waitForURL(/\/months\/[a-z0-9]+$/);
+
+		await expect(page.getByTestId("month-save-status")).toHaveText("Nothing entered yet");
+		await expect(page.getByTestId("month-save")).toHaveText("Save Draft");
+		await expect(page.getByTestId("month-save")).toBeDisabled();
+		await expect(page.getByTestId("month-submit-open")).toBeEnabled();
+
+		await page.getByTestId("month-submit-open").click();
+		await expect(page.getByRole("dialog")).toHaveCount(0);
+		const missing = page.getByTestId("month-submit-missing");
+		await expect(missing).toContainText("Before you can submit:");
+		await expect(missing).toContainText("Coal: enter a value or tick N/A");
+		await expect(missing).toContainText("Clinker produced: enter a value or tick N/A");
+		await page.getByTestId("month-missing-coal").click();
+		await expect(page.getByTestId("line-coal-value")).toBeFocused();
+
+		await page.keyboard.type("35000");
+		await expect(page.getByTestId("month-save-status")).toHaveText("Unsaved changes");
+		await page.getByTestId("month-save").click();
+		await expect(page.getByTestId("month-save-status")).toContainText("Last saved");
+		await expect(missing).not.toContainText("Coal:");
+	});
+});

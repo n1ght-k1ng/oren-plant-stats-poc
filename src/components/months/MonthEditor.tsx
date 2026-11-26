@@ -23,7 +23,7 @@ import { OrenSelect } from "@/components/ui/select";
 import { ITEMS, type ItemDefinition, type ItemKey, expectationFor } from "@/config/items";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { runChecks } from "@/lib/checks";
-import { formatDecimal } from "@/lib/format";
+import { formatDateTime, formatDecimal } from "@/lib/format";
 import type { MonthDetail } from "@/lib/schemas/month";
 import { api } from "@/utils/api";
 
@@ -141,6 +141,8 @@ export function MonthEditor({ month, onConflict }: Props) {
 	const [form, setForm] = useState<FormState>(loaded);
 	const [submitOpen, setSubmitOpen] = useState(false);
 	const [importOpen, setImportOpen] = useState(false);
+	// Shown when Submit is pressed with items still missing (U6).
+	const [showMissing, setShowMissing] = useState(false);
 
 	// A fresh load (after saving, or a reload) replaces the form.
 	useEffect(() => setForm(loaded), [loaded]);
@@ -256,6 +258,19 @@ export function MonthEditor({ month, onConflict }: Props) {
 						>
 							Import from File or Paste
 						</OrenButton>
+						<p
+							className={
+								changed.length > 0 ? "text-sm font-medium text-feedback-warning-text" : "text-sm text-text-secondary"
+							}
+							data-testid="month-save-status"
+							aria-live="polite"
+						>
+							{changed.length > 0
+								? "Unsaved changes"
+								: month.lastSavedAt
+									? `Last saved ${formatDateTime(month.lastSavedAt)}`
+									: "Nothing entered yet"}
+						</p>
 						<OrenButton
 							variant="secondary"
 							leftIcon={<Save />}
@@ -265,21 +280,54 @@ export function MonthEditor({ month, onConflict }: Props) {
 							onClick={() => void onSave()}
 							data-testid="month-save"
 						>
-							{changed.length === 0 ? "All Changes Saved" : "Save Draft"}
+							Save Draft
 						</OrenButton>
 						<OrenButton
 							leftIcon={<Send />}
-							disabled={blocked}
-							onClick={() => setSubmitOpen(true)}
+							onClick={() => {
+								if (blocked) {
+									setShowMissing(true);
+									return;
+								}
+								setShowMissing(false);
+								setSubmitOpen(true);
+							}}
 							data-testid="month-submit-open"
 						>
 							Submit for Review
 						</OrenButton>
-						{blocked && (
+						{blocked && !showMissing && (
 							<p className="text-xs text-text-secondary" data-testid="month-submit-blocked">
-								{ready.missing.length > 0 && `Enter a value or N/A for: ${ready.missing.join(", ")}. `}
-								{ready.unreadable.length > 0 && `Fix the figures we can't read: ${ready.unreadable.join(", ")}.`}
+								{ready.missing.length + ready.unreadable.length} more{" "}
+								{ready.missing.length + ready.unreadable.length === 1 ? "item needs" : "items need"} an answer before
+								you can submit.
 							</p>
+						)}
+						{blocked && showMissing && (
+							<div
+								role="alert"
+								className="flex flex-col gap-2 rounded-lg bg-surface-warning-subtle px-3 py-2 text-sm"
+								data-testid="month-submit-missing"
+							>
+								<span className="font-medium text-text-primary">Before you can submit:</span>
+								{[
+									...ready.missing.map((label) => ({ label, what: "enter a value or tick N/A" })),
+									...ready.unreadable.map((label) => ({ label, what: "fix the figure" })),
+								].map(({ label, what }) => {
+									const item = ITEMS.find((candidate) => candidate.label === label);
+									return (
+										<button
+											key={label}
+											type="button"
+											className="text-left text-text-link underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
+											onClick={() => document.getElementById(`line-${item?.key}-value`)?.focus()}
+											data-testid={`month-missing-${item?.key}`}
+										>
+											{label}: {what}
+										</button>
+									);
+								})}
+							</div>
 						)}
 					</CardContent>
 				</Card>

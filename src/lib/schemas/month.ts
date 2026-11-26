@@ -93,6 +93,8 @@ export const monthDetail = z.object({
 	status,
 	/** RETURNED because the Head reopened an approved month, not a reviewer's send-back (U23). */
 	reopened: z.boolean(),
+	/** When someone last saved a figure or note in this month; null if nothing has been entered (U6). */
+	lastSavedAt: z.date().nullable(),
 	version: z.number().int(),
 	/** The plant type when the month was opened; decides the expected items (U9). */
 	plantType: z.enum(PLANT_TYPES),

@@ -294,6 +294,11 @@ export async function getMonth(db: Db, user: SessionUser, reportId: string): Pro
 		period: report.period,
 		status: report.status,
 		reopened: wasReopened(report.status, lastReturn?.action),
+		lastSavedAt:
+			lines
+				.filter((line) => line.updatedById !== null)
+				.map((line) => line.updatedAt)
+				.sort((a, b) => b.getTime() - a.getTime())[0] ?? null,
 		version: report.version,
 		plantType: report.plantType,
 		canEdit,

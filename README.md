@@ -53,6 +53,9 @@ database (or Neon branch) that your live site does not use. Run `npm run db:push
 
 ## Deploy
 
+See `docs/DEPLOY.md` for the exact steps and the two environment variables. In short:
+
+
 1. Push the repo to GitHub and import it in [Vercel](https://vercel.com).
 2. In the Vercel project, set `DATABASE_URL` (Neon's pooled connection string) and `DIRECT_URL` (the
    direct one).

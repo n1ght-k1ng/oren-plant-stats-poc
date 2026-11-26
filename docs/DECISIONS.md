@@ -172,7 +172,7 @@ Entries keep their numbers so that commits, tests and the write-up can refer to 
 **O7. Periods.** **DECIDED**
 - Months are stored as `YYYY-MM`.
 - Reports use Indian financial-year quarters, April to March. October 2026 is in Q3 FY 2026-27.
-- Months can be entered from April 2026.
+- Months can be entered from April 2026. That month is set as `FIRST_REPORTING_PERIOD` in `src/config/reporting.ts`, so older months can be opened or seeded later by changing one setting.
 
 **O8. More than one data owner per plant.** **DECIDED**
 - Any owner of the plant may edit and submit.

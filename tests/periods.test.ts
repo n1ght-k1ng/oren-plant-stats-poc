@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { FIRST_REPORTING_PERIOD } from "@/config/reporting";
 import {
-	EARLIEST_PERIOD,
 	cannotOpenReason,
 	currentPeriod,
 	daysInMonth,
@@ -74,8 +74,8 @@ describe("days in a month", () => {
 describe("which months can be opened", () => {
 	const midNovember = new Date("2026-11-15T06:00:00Z");
 
-	it("opens months that have ended, from April 2026", () => {
-		expect(EARLIEST_PERIOD).toBe("2026-04");
+	it("opens months that have ended, from the configured first month (April 2026)", () => {
+		expect(FIRST_REPORTING_PERIOD).toBe("2026-04");
 		expect(cannotOpenReason("2026-04", midNovember)).toBeNull();
 		expect(cannotOpenReason("2026-10", midNovember)).toBeNull();
 	});
@@ -85,6 +85,13 @@ describe("which months can be opened", () => {
 		expect(cannotOpenReason("2027-01", midNovember)).toBe("January 2027 has not ended yet.");
 		expect(cannotOpenReason("2026-03", midNovember)).toBe("Months before April 2026 are not collected here.");
 		expect(cannotOpenReason("Oct-26", midNovember)).toBe("Choose a month in the form YYYY-MM.");
+	});
+
+	it("follows a different first month when one is configured", () => {
+		expect(cannotOpenReason("2026-03", midNovember, "2025-04")).toBeNull();
+		expect(cannotOpenReason("2025-03", midNovember, "2025-04")).toBe(
+			"Months before April 2025 are not collected here.",
+		);
 	});
 
 	it("ends a month at midnight in India, not in UTC", () => {

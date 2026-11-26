@@ -1,13 +1,12 @@
 /**
  * Reporting months, written "YYYY-MM" (docs/DECISIONS.md O7).
  *
- * - Months can be entered from April 2026, once they have ended.
+ * - Months can be entered once they have ended, from FIRST_REPORTING_PERIOD in src/config/reporting.ts.
  * - A month ends at midnight India Standard Time (UTC+5:30, no daylight saving), not UTC (A9).
  * - Quarters follow the Indian financial year, April to March: October 2026 is Q3 FY 2026-27.
  */
 
-/** The first month that can be entered. */
-export const EARLIEST_PERIOD = "2026-04";
+import { FIRST_REPORTING_PERIOD } from "@/config/reporting";
 
 const PERIOD = /^(\d{4})-(0[1-9]|1[0-2])$/;
 const IST_OFFSET_MINUTES = 5 * 60 + 30;
@@ -56,13 +55,13 @@ export function hasEnded(period: string, now: Date): boolean {
 	return period < currentPeriod(now);
 }
 
-/** Why a month cannot be opened yet, or null when it can. */
-export function cannotOpenReason(period: string, now: Date): string | null {
+/** Why a month cannot be opened yet, or null when it can. `firstPeriod` defaults to the configured first month. */
+export function cannotOpenReason(period: string, now: Date, firstPeriod = FIRST_REPORTING_PERIOD): string | null {
 	if (!isPeriod(period)) {
 		return "Choose a month in the form YYYY-MM.";
 	}
-	if (period < EARLIEST_PERIOD) {
-		return `Months before ${periodLabel(EARLIEST_PERIOD)} are not collected here.`;
+	if (period < firstPeriod) {
+		return `Months before ${periodLabel(firstPeriod)} are not collected here.`;
 	}
 	if (!hasEnded(period, now)) {
 		return `${periodLabel(period)} has not ended yet.`;

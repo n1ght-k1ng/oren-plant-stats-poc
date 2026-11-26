@@ -46,6 +46,7 @@ A request goes page → `api.*` hook (`src/utils/api.ts`) → router → service
 - **Services** (`src/server/services`) hold the logic. They take `db` and usually `user` as arguments instead of importing `prisma`. Type `db` as `Db` (`src/server/db.ts`) so it accepts a transaction client, or as `PrismaClient` if the service opens the transaction itself.
 - **Schemas** (`src/lib/schemas`) are the contract between server and browser, and the source of types such as `SessionUser`. `.output()` strips fields that are not in the schema, so a new column must be added to both the service's `select` and the output schema.
 - **`src/lib`** is shared by the browser and server and must not import from `src/server`.
+- **`src/config`** holds settings a developer changes without touching logic: the first reporting month, and later the item catalogue, unit aliases and check ranges. No settings screen in v1 (DECISIONS U7).
 
 ### Auth and tenancy
 

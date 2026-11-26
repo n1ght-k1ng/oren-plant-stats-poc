@@ -119,6 +119,7 @@ describe("toLineInput", () => {
 			value: "",
 			unit: "t",
 			note: null,
+			uploadId: null,
 		});
 	});
 });

@@ -1,8 +1,9 @@
-import { Save, Send } from "lucide-react";
+import { FileUp, Save, Send } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
 import { FlagList } from "@/components/months/FlagList";
+import { ImportDialog } from "@/components/months/ImportDialog";
 import { SubmitDialog } from "@/components/months/SubmitDialog";
 import {
 	type FormLine,
@@ -78,7 +79,9 @@ function LineRow({
 						value={isNa ? "" : line.value}
 						disabled={isNa}
 						errorMessage={preview.kind === "error" ? preview.message : undefined}
-						onChange={(event) => onChange({ ...line, mode: "value", value: event.target.value, naLabel: undefined })}
+						onChange={(event) =>
+							onChange({ ...line, mode: "value", value: event.target.value, naLabel: undefined, uploadId: undefined })
+						}
 						data-testid={`line-${item.key}-value`}
 					/>
 					{item.formUnits.length > 1 ? (
@@ -86,7 +89,7 @@ function LineRow({
 							options={[...item.formUnits]}
 							value={line.unit}
 							disabled={isNa}
-							onValueChange={(unit) => onChange({ ...line, unit })}
+							onValueChange={(unit) => onChange({ ...line, unit, uploadId: undefined })}
 							data-testid={`line-${item.key}-unit`}
 						/>
 					) : (
@@ -98,7 +101,13 @@ function LineRow({
 							className="size-4 accent-[var(--color-interactive-primary)]"
 							checked={isNa}
 							onChange={(event) =>
-								onChange({ ...line, mode: event.target.checked ? "na" : "blank", value: "", naLabel: undefined })
+								onChange({
+									...line,
+									mode: event.target.checked ? "na" : "blank",
+									value: "",
+									naLabel: undefined,
+									uploadId: undefined,
+								})
 							}
 							data-testid={`line-${item.key}-na`}
 						/>
@@ -130,6 +139,7 @@ export function MonthEditor({ month, onConflict }: Props) {
 	const loaded = useMemo(() => initialForm(month.lines ?? []), [month.lines]);
 	const [form, setForm] = useState<FormState>(loaded);
 	const [submitOpen, setSubmitOpen] = useState(false);
+	const [importOpen, setImportOpen] = useState(false);
 
 	// A fresh load (after saving, or a reload) replaces the form.
 	useEffect(() => setForm(loaded), [loaded]);
@@ -237,6 +247,14 @@ export function MonthEditor({ month, onConflict }: Props) {
 				<Card>
 					<CardContent className="flex flex-col gap-3 pt-5">
 						<OrenButton
+							variant="outline"
+							leftIcon={<FileUp />}
+							onClick={() => setImportOpen(true)}
+							data-testid="month-import-open"
+						>
+							Import from File or Paste
+						</OrenButton>
+						<OrenButton
 							variant="secondary"
 							leftIcon={<Save />}
 							disabled={changed.length === 0 || save.isLoading || ready.unreadable.length > 0}
@@ -264,6 +282,8 @@ export function MonthEditor({ month, onConflict }: Props) {
 					</CardContent>
 				</Card>
 			</div>
+
+			<ImportDialog open={importOpen} onOpenChange={setImportOpen} month={month} form={form} onApply={setForm} />
 
 			<SubmitDialog
 				open={submitOpen}

@@ -19,6 +19,8 @@ export type FormLine = {
 	note: string;
 	/** Read-only explanation when N/A was set by the plant type or confirmed as not used. */
 	naLabel?: string;
+	/** Set when the value came from an import, so it is saved as imported (D16). Cleared when the owner edits it. */
+	uploadId?: string;
 };
 
 export type FormState = Record<ItemKey, FormLine>;
@@ -80,7 +82,7 @@ export function previewLine(key: ItemKey, line: FormLine): LinePreview {
 }
 
 function sameLine(a: FormLine, b: FormLine): boolean {
-	if (a.mode !== b.mode || a.note.trim() !== b.note.trim()) {
+	if (a.mode !== b.mode || a.note.trim() !== b.note.trim() || (a.uploadId ?? null) !== (b.uploadId ?? null)) {
 		return false;
 	}
 	return a.mode !== "value" || (a.value.trim() === b.value.trim() && a.unit === b.unit);
@@ -98,6 +100,7 @@ export function toLineInput(key: ItemKey, line: FormLine): LineInput {
 		value: line.value,
 		unit: line.unit,
 		note: line.note.trim() || null,
+		uploadId: line.uploadId ?? null,
 	};
 }
 

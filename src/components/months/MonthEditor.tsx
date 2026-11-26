@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OrenSelect } from "@/components/ui/select";
 import { ITEMS, type ItemDefinition, type ItemKey, expectationFor } from "@/config/items";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { runChecks } from "@/lib/checks";
 import { formatDecimal } from "@/lib/format";
 import type { MonthDetail } from "@/lib/schemas/month";
@@ -145,6 +146,7 @@ export function MonthEditor({ month, onConflict }: Props) {
 	useEffect(() => setForm(loaded), [loaded]);
 
 	const changed = changedItems(form, loaded);
+	useUnsavedChangesWarning(changed.length > 0);
 	const ready = readiness(form, month.plantType);
 	const flags = useMemo(
 		() =>

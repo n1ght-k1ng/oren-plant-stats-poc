@@ -1,4 +1,4 @@
-import { AlertTriangle, Factory, Flame } from "lucide-react";
+import { AlertTriangle, ClipboardList, Factory, Flame } from "lucide-react";
 import { useRouter } from "next/router";
 import { type ReactNode, useEffect } from "react";
 
@@ -25,6 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/utils/api";
 
 const NAV_ITEMS = [
+	{ href: "/months", label: "Monthly data", icon: ClipboardList },
 	{ href: "/plants", label: "Plants", icon: Factory },
 	{ href: "/factors", label: "Emission factors", icon: Flame },
 ];

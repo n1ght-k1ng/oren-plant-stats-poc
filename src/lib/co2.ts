@@ -10,6 +10,7 @@
 import { ITEMS, type ItemKey } from "@/config/items";
 import { D, toD } from "@/lib/decimal";
 import { EMISSION_FACTORS, type EmissionFactorKey } from "@/lib/factors";
+import { groupIndianDigits } from "@/lib/format";
 import type { ApprovalLine } from "@/lib/schemas/report";
 
 export type Co2Line =
@@ -75,16 +76,6 @@ export function calculateCo2(lines: Partial<Record<ItemKey, Co2Line>>): Co2Resul
 	};
 }
 
-/** en-IN digit grouping on a whole-number string: 259993 → 2,59,993. */
-function groupIndian(digits: string): string {
-	if (digits.length <= 3) {
-		return digits;
-	}
-	const lastThree = digits.slice(-3);
-	const rest = digits.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
-	return `${rest},${lastThree}`;
-}
-
 /**
  * kg CO2 shown as tonnes: 1 decimal place, rounded half up, en-IN grouping. 259993200 kg → "2,59,993.2".
  * Formats the decimal string itself, never via a JS number.
@@ -95,5 +86,5 @@ export function formatTonnes(kgCo2: string | D): string {
 		.toDecimalPlaces(1, D.ROUND_HALF_UP)
 		.toFixed(1);
 	const [whole, fraction] = tonnes.split(".");
-	return `${groupIndian(whole)}.${fraction}`;
+	return `${groupIndianDigits(whole)}.${fraction}`;
 }

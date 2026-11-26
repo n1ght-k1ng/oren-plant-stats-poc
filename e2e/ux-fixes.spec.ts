@@ -1,6 +1,10 @@
+import { join } from "node:path";
+
 import { type Page, expect, test } from "@playwright/test";
 
 import { readRun } from "./run";
+
+const P04_FILE = join(__dirname, "..", "samples", "P04_Nalgonda_2026-10.csv");
 
 // Checks that keep the UX review's fixes fixed (docs/UX-REVIEW.md). Runs in this run's own E2E company.
 
@@ -256,5 +260,35 @@ test.describe("U6: the month says whether it's saved, and Submit says what's mis
 		await page.getByTestId("month-save").click();
 		await expect(page.getByTestId("month-save-status")).toContainText("Last saved");
 		await expect(missing).not.toContainText("Coal:");
+	});
+});
+
+test.describe("U14: the import says what's left and takes you to it", () => {
+	test.use({ viewport: { width: 1366, height: 620 } });
+
+	test("Fill the Form, with questions unanswered, shows the count and scrolls to the first one", async ({ page }) => {
+		await signIn(page, run.owner.email);
+		await page.getByTestId(`todo-action-${run.plants.import}-2026-05`).click();
+		await page.waitForURL(/\/months\/[a-z0-9]+$/);
+		await page.getByTestId("month-import-open").click();
+		await page.getByTestId("import-file").setInputFiles(P04_FILE);
+		await expect(page.getByTestId("import-preview")).toBeVisible();
+
+		await expect(page.getByTestId("import-pending")).toHaveText("3 questions left");
+		// Scroll the preview to its end, so the first question (line 5) is out of view, as on a laptop.
+		await page.getByTestId("import-summary").scrollIntoViewIfNeeded();
+		await expect(page.getByTestId("import-row-5")).not.toBeInViewport();
+		await page.getByTestId("import-apply").click();
+		// Nothing was filled, and the first unanswered question is brought into view.
+		await expect(page.getByRole("dialog")).toBeVisible();
+		await expect(page.getByTestId("import-row-5")).toBeInViewport();
+
+		for (const line of [5, 6, 9]) {
+			await page.getByTestId(`import-answer-${line}-yes`).click();
+		}
+		await expect(page.getByTestId("import-pending")).toHaveCount(0);
+		await page.getByTestId("import-apply").click();
+		await expect(page.getByRole("dialog")).toHaveCount(0);
+		await expect(page.getByTestId("line-coal-value")).toHaveValue("11,000");
 	});
 });

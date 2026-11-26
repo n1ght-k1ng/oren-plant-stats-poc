@@ -119,7 +119,7 @@ test("the data owner imports P04's file, answers the MT questions, and the form 
 	await expect(page.getByTestId("import-warnings")).toHaveCount(0);
 	await expect(page.getByTestId("import-row-5")).toContainText("Confirm it means tonnes (t), not million tonnes.");
 
-	await expect(page.getByTestId("import-apply")).toBeDisabled();
+	await expect(page.getByTestId("import-pending")).toHaveText("3 questions left");
 	for (const line of [5, 6, 9]) {
 		await page.getByTestId(`import-answer-${line}-yes`).click();
 	}

@@ -28,7 +28,6 @@ import { type ItemKey, itemByKey } from "@/config/items";
 import { MAX_UPLOAD_BYTES } from "@/lib/schemas/import";
 import type { ImportResult } from "@/lib/schemas/import";
 import type { MonthDetail } from "@/lib/schemas/month";
-import { cn } from "@/lib/utils";
 import { api } from "@/utils/api";
 
 type Row = ImportResult["mapping"]["rows"][number];
@@ -229,6 +228,20 @@ export function ImportDialog({ open, onOpenChange, month, form, onApply }: Props
 		(comparison) => !comparison.conflict || choices[comparison.itemKey] === "imported",
 	);
 
+	/** U14: with anything unanswered, take the owner to it instead of a silently disabled button. */
+	function fillOrShowWhatsLeft() {
+		if (waiting.questions + waiting.conflicts === 0) {
+			apply();
+			return;
+		}
+		const firstQuestion = rows.find((row) => row.status === "ASK" && !answers[row.line]);
+		const target = firstQuestion
+			? document.querySelector(`[data-testid="import-row-${firstQuestion.line}"]`)
+			: document.querySelector('[data-testid="import-conflicts"]');
+		target?.scrollIntoView({ block: "center", behavior: "smooth" });
+		target?.querySelector<HTMLElement>("button, [role=combobox]")?.focus({ preventScroll: true });
+	}
+
 	function apply() {
 		const { form: next, filled } = applyImport(form, comparisons, choices);
 		onApply(next);
@@ -396,18 +409,29 @@ export function ImportDialog({ open, onOpenChange, month, form, onApply }: Props
 						</OrenButton>
 					) : (
 						!result.mapping.error && (
-							<OrenButton
-								disabled={waiting.questions + waiting.conflicts > 0}
-								onClick={apply}
-								className={cn(waiting.questions + waiting.conflicts > 0 && "opacity-90")}
-								data-testid="import-apply"
-							>
-								Fill the Form
-							</OrenButton>
+							<>
+								{waiting.questions + waiting.conflicts > 0 && (
+									<span className="mr-auto text-sm text-text-secondary" aria-live="polite" data-testid="import-pending">
+										{pendingText(waiting)}
+									</span>
+								)}
+								<OrenButton onClick={fillOrShowWhatsLeft} data-testid="import-apply">
+									Fill the Form
+								</OrenButton>
+							</>
 						)
 					)}
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>
 	);
+}
+
+/** "2 questions and 1 choice left" */
+function pendingText({ questions, conflicts }: { questions: number; conflicts: number }): string {
+	const parts = [
+		questions > 0 ? `${questions} ${questions === 1 ? "question" : "questions"}` : null,
+		conflicts > 0 ? `${conflicts} ${conflicts === 1 ? "choice" : "choices"}` : null,
+	].filter(Boolean);
+	return `${parts.join(" and ")} left`;
 }

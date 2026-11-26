@@ -341,6 +341,18 @@ Enforced on the server by `requirePermission` (`src/server/helpers/permissions.t
 **R4. What makes someone a data owner of a plant.** Being linked to the plant (`Plant.dataOwners`) lets someone enter and submit, recorded as data owner. Holding the `DATA_OWNER` role without the link does not. **DECIDED**
 - This keeps it to one source of truth: the plant's owner list.
 
+### Dashboard (Phase 5)
+
+**V1. What counts.** **DECIDED** (from the Phase 5 request; refines O6)
+- A month counts when its status is APPROVED now, using its latest approval snapshot. A reopened month keeps its old approval in the audit trail but contributes nothing.
+- Months that aren't approved show their status and no number, never a zero.
+- Coverage counts only months that have ended ("due"). Months of the quarter still running show as "Not due yet" and aren't missing. With today's date, Q3 FY 2026-27 counts October only.
+- Totals are added in kg before rounding (N2), and every approved figure links to its month's audit trail.
+
+**V2. Which quarter opens.** **DECIDED** The latest quarter with any month in it, otherwise the current quarter. Any quarter from the first reporting month to now can be chosen.
+
+**V3. Who sees it.** **PROPOSED** The Head of Sustainability and reviewers. Data owners don't: it covers every plant's approved CO2, which they don't need.
+
 **E1. End-to-end tests.** Playwright runs Flows 1 to 4 through the user switcher, both locally and against the deployed URL. **DECIDED**
 
 **H1. The month history screen is core v1**, not optional. It shows every value as entered and converted, every change, every status change with its comment and role, flagged-approval explanations, and the factors used. **DECIDED**

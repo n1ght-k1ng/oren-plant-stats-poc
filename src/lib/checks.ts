@@ -44,13 +44,20 @@ function quantityOf(lines: CheckLines, key: ItemKey): D | null {
 	return line.state === "VALUE" ? toD(line.value) : null;
 }
 
-/** For totals: N/A counts as nothing; null when the line is not entered yet, so the total is not ready. */
-function amountOf(lines: CheckLines, key: ItemKey): D | null {
+/**
+ * For totals: N/A counts as nothing. A blank optional item counts as nothing too, because submission makes the
+ * data owner confirm it as "not used this month" (P4); so the flags seen while typing are the ones frozen at
+ * submission (U2). A blank expected item returns null: the total is not ready yet.
+ */
+function amountOf(lines: CheckLines, key: ItemKey, plantType: CheckInput["plantType"]): D | null {
 	const line = stateOf(lines, key);
 	if (line.state === "VALUE") {
 		return toD(line.value);
 	}
-	return line.state === "NA" ? new D(0) : null;
+	if (line.state === "NA" || expectationFor(key, plantType) === "OPTIONAL") {
+		return new D(0);
+	}
+	return null;
 }
 
 /** Rounded for people, never for the comparison. */
@@ -89,7 +96,7 @@ function integratedChecks(input: CheckInput): CheckFlag[] {
 	const clinker = quantityOf(lines, "clinker");
 	const clinkerProduced = clinker?.greaterThan(0) ? clinker : null;
 
-	const fuelAmounts = KILN_FUELS.map((key) => amountOf(lines, key));
+	const fuelAmounts = KILN_FUELS.map((key) => amountOf(lines, key, input.plantType));
 	const kilnEnergy = fuelAmounts.every((amount) => amount !== null)
 		? KILN_FUELS.reduce(
 				(total, key, index) => total.plus((fuelAmounts[index] as D).times(KILN_FUEL_ENERGY_GJ_PER_TONNE[key])),

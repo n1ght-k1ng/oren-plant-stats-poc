@@ -268,7 +268,8 @@ describe("viewing a draft (R1)", () => {
 		await callerFor(owner).month.save({ reportId, expectedVersion: 1, lines: P01_LINES });
 
 		const ownerView = await callerFor(owner).month.byId({ reportId });
-		expect(ownerView.flags.map((flag) => flag.code)).toEqual(["GRID_PER_CLINKER"]);
+		// Furnace oil is blank and optional, so it counts as not used: the same two flags the submission freezes.
+		expect(ownerView.flags.map((flag) => flag.code)).toEqual(["KILN_ENERGY", "GRID_PER_CLINKER"]);
 		expect(ownerView.checkContext.capacityTpa).toBe(4_000_000);
 
 		const reviewerView = await callerFor(reviewer).month.byId({ reportId });
@@ -300,6 +301,7 @@ describe("submitting", () => {
 	it("submits P01's October, freezing its lines and its two flags, and opens the values to reviewers", async () => {
 		const { reportId } = await openNew();
 		await callerFor(owner).month.save({ reportId, expectedVersion: 1, lines: P01_LINES });
+		const seenWhileEditing = (await callerFor(owner).month.byId({ reportId })).flags;
 		const submitted = await callerFor(owner).month.submit({
 			reportId,
 			expectedVersion: 2,
@@ -319,6 +321,8 @@ describe("submitting", () => {
 		const reviewerView = await callerFor(reviewer).month.byId({ reportId });
 		expect(reviewerView.lines).not.toBeNull();
 		expect(reviewerView.flags.map((flag) => flag.code)).toEqual(["KILN_ENERGY", "GRID_PER_CLINKER"]);
+		// U2: the reviewer sees exactly the flags the data owner saw.
+		expect(reviewerView.flags).toEqual(seenWhileEditing);
 		expect(reviewerView.history).toMatchObject([{ action: "SUBMIT", actorName: "Owner", toStatus: "SUBMITTED" }]);
 	});
 

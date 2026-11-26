@@ -216,6 +216,14 @@ describe("a draft being typed", () => {
 		expect(codes(halfDone)).toEqual(["GRID_PER_CLINKER"]);
 	});
 
+	it("counts a blank optional item as not used, so the flags while typing match the flags at submission", () => {
+		// Furnace oil is optional at an integrated plant. Left blank, it will be confirmed as not used on submit.
+		const { furnace_oil: _blank, ...withoutFurnaceOil } = P01_OCTOBER.lines;
+		const whileTyping = runChecks({ ...P01_OCTOBER, lines: withoutFurnaceOil });
+		expect(whileTyping).toEqual(runChecks(P01_OCTOBER));
+		expect(whileTyping.map((flag) => flag.code)).toEqual(["KILN_ENERGY", "GRID_PER_CLINKER"]);
+	});
+
 	it("runs on an empty month without errors", () => {
 		expect(runChecks({ plantType: "INTEGRATED", period: "2026-10", capacityTpa: null, lines: {} })).toEqual([]);
 		expect(runChecks({ plantType: "GRINDING_UNIT", period: "2026-10", capacityTpa: null, lines: {} })).toEqual([]);

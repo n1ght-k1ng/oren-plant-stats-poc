@@ -57,3 +57,22 @@
 - **Each check runs as its own command,** and its result is read before the next: tests, then `npm run typecheck`, then `npx biome check .`, then the commit.
 - **A pass must say it passed.** Typecheck is reported as a count of `error TS` lines ("typecheck errors: 0"), and lint must show "No fixes applied" or "Checked N files" with no "Found" line. Blank or cropped output counts as not checked.
 - **The slip stays in the history.** The fix is its own commit, not an amend, and its message says what happened.
+
+## 2026-11-26: dev servers reported "stopped" were still running
+
+**Where:** this machine. Nothing deployed was affected. Found at about 17:15 IST, after Docker Desktop was killed for lack of memory.
+
+### What happened
+- Claude restarted the local dev server twice: once after the schema change (about 11:30), and once when a stale build cache broke the dashboard page (about 16:00).
+- Each time it ran `kill <pid>` on the `next-server` process and reported it "stopped", having checked only that port 3000 was free.
+- **Neither process had exited.** `next-server` ignored the plain `kill` (SIGTERM) after giving up its port. Two orphaned servers kept running, for 6½ and 3½ hours, holding about 1 GB between them.
+- At 17:13 the machine ran out of memory, and the system killed Docker Desktop. Taking down the local database, and with it the app, the tests and the UX review run. The orphans were one of several causes, alongside Docker's containers, a second dev server for the review, and repeated headless Chrome launches.
+
+### Why it looked done
+- **The wrong thing was checked.** "Port 3000 is free" was taken as "the process is gone". A server can release its port and keep running.
+- **The command's own output was trusted.** The script printed "stopped" because `kill` returned without error, not because anything was confirmed.
+
+### What we changed
+- **After stopping any process, confirm it is gone** by its PID (`ps -p <pid>`). If it is still there a few seconds after SIGTERM, use SIGKILL, check again, and only then report it stopped.
+- **Before starting a server, list what is already running** (`ps` for `next-server`, with each process's folder and port), so earlier orphans are caught.
+- **Both orphans were stopped with SIGKILL and confirmed gone.** Only one dev server now runs.

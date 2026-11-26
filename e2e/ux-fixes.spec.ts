@@ -304,3 +304,49 @@ test.describe("U38a: the dashboard spells out Scope 1 and Scope 2", () => {
 		expect(body).not.toMatch(/\bS[12]\b/);
 	});
 });
+
+test.describe("U29: an approved month never reappears in the queue", () => {
+	test("even while the queue's refresh is slow", async ({ page }) => {
+		const plant = run.plants.import;
+		const period = "2026-06";
+		await signIn(page, run.owner.email);
+		await page.getByTestId(`todo-action-${plant}-${period}`).click();
+		await page.waitForURL(/\/months\/[a-z0-9]+$/);
+		for (const [key, value] of [
+			["coal", "11000"],
+			["petcoke", "1500"],
+			["diesel", "95000"],
+			["grid_power", "12300"],
+			["clinker", "101700"],
+		]) {
+			await page.getByTestId(`line-${key}-value`).fill(value);
+		}
+		await page.getByTestId("month-submit-open").click();
+		await page.getByTestId("submit-not-used-furnace_oil").check();
+		await page.getByTestId("submit-confirm").click();
+		await expect(page.getByTestId("status-submitted")).toBeVisible();
+
+		await signIn(page, run.reviewer.email);
+		const row = page.getByTestId(`review-row-${plant}-${period}`);
+		await expect(row).toBeVisible();
+		await page.getByTestId(`review-open-${plant}-${period}`).click();
+		await page.getByTestId("review-comment").fill("Checked; accepted.");
+
+		// Make every queue refresh from now on take 3 seconds, as on a slow connection.
+		await page.route(/\/api\/trpc\/[^?]*review\.queue/, async (route) => {
+			await new Promise((resolve) => setTimeout(resolve, 3000));
+			await route.continue();
+		});
+		const clicked = Date.now();
+		await page.getByTestId("review-approve").click();
+		// Back on the queue promptly, without waiting for the slow refresh...
+		await page.waitForURL("**/review", { timeout: 1500 });
+		expect(Date.now() - clicked).toBeLessThan(1500);
+		// ...and the approved month is already gone from it.
+		await expect(
+			page.locator('[data-testid^="review-row-"]').first().or(page.getByText("Nothing waiting for review")),
+		).toBeVisible({ timeout: 1500 });
+		// Checked at once, not waited for: the slow refresh would otherwise hide a stale row.
+		expect(await row.count()).toBe(0);
+	});
+});

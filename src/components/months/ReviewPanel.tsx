@@ -26,8 +26,13 @@ export function ReviewPanel({ month, onConflict }: Props) {
 	const flagged = hasWarnings(month.flags);
 	const hasComment = comment.trim().length > 0;
 
-	const done = async (message: string) => {
-		await Promise.all([utils.month.byId.invalidate({ reportId: month.id }), utils.review.queue.invalidate()]);
+	const done = (message: string) => {
+		// Take the month out of the cached queue first, so the queue never shows it again while it refetches
+		// (docs/UX-REVIEW.md U29).
+		utils.review.queue.setData(undefined, (queue) => queue?.filter((entry) => entry.reportId !== month.id));
+		// Refresh in the background: going back to the queue doesn't wait for a slow connection.
+		void utils.month.byId.invalidate({ reportId: month.id });
+		void utils.review.queue.invalidate();
 		toast.success(message);
 		void router.push("/review");
 	};

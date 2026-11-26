@@ -138,7 +138,12 @@ describe("approved figures only", () => {
 	it("never counts a reopened month, though its old approval is kept for the audit trail", async () => {
 		const dashboard = await overview(head);
 		expect(row(dashboard, "B")?.approved).toBeNull();
-		expect(row(dashboard, "B")?.cells[0]).toMatchObject({ period: "2026-07", status: "RETURNED", approved: null });
+		expect(row(dashboard, "B")?.cells[0]).toMatchObject({
+			period: "2026-07",
+			status: "RETURNED",
+			reopened: true,
+			approved: null,
+		});
 		expect(await prisma.approvalSnapshot.count({ where: { reportId: months.B07 } })).toBe(1);
 	});
 
@@ -178,12 +183,14 @@ describe("approved figures only", () => {
 describe("where things stand", () => {
 	it("lists every due plant-month that isn't approved, with its status", async () => {
 		const dashboard = await overview(head);
-		expect(dashboard.company.missing.map((entry) => [entry.plantCode, entry.period, entry.status])).toEqual([
-			["A", "2026-09", "RETURNED"],
-			["B", "2026-07", "RETURNED"],
-			["B", "2026-08", "DRAFT"],
-			["B", "2026-09", null],
-			["C", "2026-08", null],
+		expect(
+			dashboard.company.missing.map((entry) => [entry.plantCode, entry.period, entry.status, entry.reopened]),
+		).toEqual([
+			["A", "2026-09", "RETURNED", true],
+			["B", "2026-07", "RETURNED", true],
+			["B", "2026-08", "DRAFT", false],
+			["B", "2026-09", null, false],
+			["C", "2026-08", null, false],
 		]);
 	});
 

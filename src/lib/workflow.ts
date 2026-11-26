@@ -88,3 +88,11 @@ export function transition({ status, action, comment, hasFlags }: TransitionInpu
 export function canEditLines(status: ReportStatus): boolean {
 	return status === "DRAFT" || status === "RETURNED";
 }
+
+/**
+ * Whether a returned month is back with the plant because the Head reopened it (U23). Takes the month's
+ * status and the action of its latest send-back or reopen event.
+ */
+export function wasReopened(status: ReportStatus, lastReturnAction: ReviewAction | null | undefined): boolean {
+	return status === "RETURNED" && lastReturnAction === "REOPEN";
+}

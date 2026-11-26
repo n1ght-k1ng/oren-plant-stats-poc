@@ -19,7 +19,7 @@ import type { LineInput, MonthDetail, MonthLine, MyMonths } from "@/lib/schemas/
 import { type CheckFlag, type SubmittedLine, checkFlags, submittedLines } from "@/lib/schemas/report";
 import type { SessionUser } from "@/lib/schemas/session";
 import { diffSubmissions } from "@/lib/submissionDiff";
-import { canEditLines } from "@/lib/workflow";
+import { canEditLines, wasReopened } from "@/lib/workflow";
 import type { Db } from "@/server/db";
 import { recordChange } from "@/server/helpers/changeLog";
 import { requirePermission } from "@/server/helpers/permissions";
@@ -139,7 +139,22 @@ export async function listMyMonths(db: Db, user: SessionUser, now: Date): Promis
 	const plants = await db.plant.findMany({
 		where: companyScope(user, { dataOwners: { some: { id: user.id } } }),
 		orderBy: { code: "asc" },
-		select: { ...plantSelect, monthlyReports: { select: { id: true, period: true, status: true } } },
+		select: {
+			...plantSelect,
+			monthlyReports: {
+				select: {
+					id: true,
+					period: true,
+					status: true,
+					events: {
+						where: { action: { in: ["SEND_BACK" as const, "REOPEN" as const] } },
+						orderBy: { sequence: "desc" as const },
+						take: 1,
+						select: { action: true },
+					},
+				},
+			},
+		},
 	});
 
 	// Every ended month from the first reporting month, newest first.
@@ -159,7 +174,12 @@ export async function listMyMonths(db: Db, user: SessionUser, now: Date): Promis
 			plant: plantRef(plant),
 			months: periods.map((period) => {
 				const report = byPeriod.get(period);
-				return { period, status: report?.status ?? null, reportId: report?.id ?? null };
+				return {
+					period,
+					status: report?.status ?? null,
+					reportId: report?.id ?? null,
+					reopened: report ? wasReopened(report.status, report.events[0]?.action) : false,
+				};
 			}),
 		};
 	});
@@ -273,6 +293,7 @@ export async function getMonth(db: Db, user: SessionUser, reportId: string): Pro
 		plant: plantRef(report.plant),
 		period: report.period,
 		status: report.status,
+		reopened: wasReopened(report.status, lastReturn?.action),
 		version: report.version,
 		plantType: report.plantType,
 		canEdit,

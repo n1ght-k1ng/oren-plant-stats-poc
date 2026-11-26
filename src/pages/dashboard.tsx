@@ -76,7 +76,7 @@ function Cell({ cell, code }: { cell: DashboardCell; code: string }) {
 	}
 	return (
 		<Link href={`/months/${cell.reportId}`} className="flex flex-col items-start gap-1" data-testid={testId}>
-			<StatusBadge status={cell.status} />
+			<StatusBadge status={cell.status} reopened={cell.reopened} />
 			{cell.waitingSince && <span className="text-xs text-text-secondary">{waited(cell.waitingSince)}</span>}
 		</Link>
 	);
@@ -84,6 +84,7 @@ function Cell({ cell, code }: { cell: DashboardCell; code: string }) {
 
 const MISSING_GROUPS = [
 	{ status: "SUBMITTED", label: "Waiting for review" },
+	{ status: "REOPENED", label: "Reopened by the Head" },
 	{ status: "RETURNED", label: "Sent back to the plant" },
 	{ status: "DRAFT", label: "Being entered" },
 	{ status: null, label: "Not started" },
@@ -92,7 +93,9 @@ const MISSING_GROUPS = [
 function Missing({ data }: { data: Dashboard }) {
 	const groups = MISSING_GROUPS.map((group) => ({
 		...group,
-		months: data.company.missing.filter((entry) => entry.status === group.status),
+		months: data.company.missing.filter(
+			(entry) => (entry.status === "RETURNED" && entry.reopened ? "REOPENED" : entry.status) === group.status,
+		),
 	})).filter((group) => group.months.length > 0);
 	if (groups.length === 0) {
 		return null;

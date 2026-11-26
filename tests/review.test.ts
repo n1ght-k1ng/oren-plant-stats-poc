@@ -259,6 +259,7 @@ describe("sending back, fixing and resubmitting (Flow 3)", () => {
 		const returned = await callerFor(owner).month.byId({ reportId });
 		expect(returned).toMatchObject({
 			status: "RETURNED",
+			reopened: false,
 			canEdit: true,
 			returnComment: { text: "Grid power looks low against last year. Please check the bill.", by: "Vikram" },
 		});
@@ -348,9 +349,13 @@ describe("reopening an approved month (3.7)", () => {
 		const returned = await callerFor(owner).month.byId({ reportId });
 		expect(returned).toMatchObject({
 			status: "RETURNED",
+			reopened: true,
 			canEdit: true,
 			returnComment: { action: "REOPEN", text: "The auditor found the diesel bill was for two months.", by: "Meera" },
 		});
+		// U23: shown as "Reopened" in the owner's list too, not as a reviewer's send-back.
+		const listed = (await callerFor(owner).month.mine()).flatMap((entry) => entry.months);
+		expect(listed.find((month) => month.reportId === reportId)).toMatchObject({ status: "RETURNED", reopened: true });
 		const reopenEvent = await prisma.reviewEvent.findFirstOrThrow({ where: { reportId, action: "REOPEN" } });
 		expect(reopenEvent).toMatchObject({
 			fromStatus: "APPROVED",

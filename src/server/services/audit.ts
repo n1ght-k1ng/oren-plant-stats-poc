@@ -14,6 +14,7 @@ import { importMapping } from "@/lib/schemas/import";
 import { type SubmittedLine, approvalLines, checkFlags, submittedLines } from "@/lib/schemas/report";
 import type { SessionUser } from "@/lib/schemas/session";
 import { diffSubmissions } from "@/lib/submissionDiff";
+import { wasReopened } from "@/lib/workflow";
 import type { Db } from "@/server/db";
 import { requirePermission } from "@/server/helpers/permissions";
 import { companyScope } from "@/server/helpers/scope";
@@ -175,6 +176,10 @@ export async function getAudit(db: Db, user: SessionUser, reportId: string): Pro
 		plant: plantRef(report.plant),
 		period: report.period,
 		status: report.status,
+		reopened: wasReopened(
+			report.status,
+			report.events.filter((event) => event.action === "SEND_BACK" || event.action === "REOPEN").at(-1)?.action,
+		),
 		approval: current,
 		earlierApprovals: earlier,
 		timeline,

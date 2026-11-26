@@ -53,7 +53,15 @@ const plantRef = z.object({ id: z.string(), code: z.string(), name: z.string(), 
 export const myMonths = z.array(
 	z.object({
 		plant: plantRef,
-		months: z.array(z.object({ period: z.string(), status: status.nullable(), reportId: z.string().nullable() })),
+		months: z.array(
+			z.object({
+				period: z.string(),
+				status: status.nullable(),
+				reportId: z.string().nullable(),
+				/** Back with the plant because the Head reopened it, not because a reviewer sent it back (U23). */
+				reopened: z.boolean(),
+			}),
+		),
 	}),
 );
 export type MyMonths = z.infer<typeof myMonths>;
@@ -83,6 +91,8 @@ export const monthDetail = z.object({
 	plant: plantRef,
 	period: z.string(),
 	status,
+	/** RETURNED because the Head reopened an approved month, not a reviewer's send-back (U23). */
+	reopened: z.boolean(),
 	version: z.number().int(),
 	/** The plant type when the month was opened; decides the expected items (U9). */
 	plantType: z.enum(PLANT_TYPES),

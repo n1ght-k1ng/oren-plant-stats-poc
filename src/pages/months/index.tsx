@@ -95,7 +95,7 @@ export default function MyMonthsPage() {
 										<TableRow key={month.period} data-testid={`month-row-${plant.code}-${month.period}`}>
 											<TableCell className="font-medium">{periodLabel(month.period)}</TableCell>
 											<TableCell>
-												<StatusBadge status={month.status} />
+												<StatusBadge status={month.status} reopened={month.reopened} />
 											</TableCell>
 											<TableCell align="right">
 												{month.reportId ? (

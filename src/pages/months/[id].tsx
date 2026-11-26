@@ -145,7 +145,7 @@ export default function MonthPage() {
 						</PageHeaderDescription>
 					</div>
 					<div className="flex items-center gap-3">
-						<StatusBadge status={data.status} />
+						<StatusBadge status={data.status} reopened={data.reopened} />
 						<Link
 							href={`/months/${data.id}/audit`}
 							className="inline-flex items-center gap-1.5 text-sm text-text-link hover:text-text-link-hover"

@@ -71,6 +71,8 @@ export const monthAudit = z.object({
 	plant: z.object({ id: z.string(), code: z.string(), name: z.string(), type: z.enum(PLANT_TYPES) }),
 	period: z.string(),
 	status: z.enum(["DRAFT", "SUBMITTED", "RETURNED", "APPROVED"]),
+	/** RETURNED because the Head reopened it (U23). */
+	reopened: z.boolean(),
 	/** The approval that counts now; null unless the month is APPROVED. */
 	approval: approval.nullable(),
 	/** Approvals later reopened: kept, never counted. Newest first. */

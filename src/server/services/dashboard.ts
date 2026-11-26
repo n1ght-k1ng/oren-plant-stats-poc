@@ -11,6 +11,7 @@ import { type FinancialQuarter, currentPeriod, financialQuarter, hasEnded, perio
 import { ROLES, hasRole } from "@/lib/roles";
 import type { Dashboard } from "@/lib/schemas/dashboard";
 import type { SessionUser } from "@/lib/schemas/session";
+import { wasReopened } from "@/lib/workflow";
 import type { Db } from "@/server/db";
 import { companyScope } from "@/server/helpers/scope";
 
@@ -92,10 +93,9 @@ export async function getDashboard(
 					period: true,
 					status: true,
 					events: {
-						where: { action: "SUBMIT" },
+						where: { action: { in: ["SUBMIT", "SEND_BACK", "REOPEN"] } },
 						orderBy: { sequence: "desc" },
-						take: 1,
-						select: { createdAt: true },
+						select: { action: true, createdAt: true },
 					},
 					approvals: {
 						orderBy: { createdAt: "desc" },
@@ -121,7 +121,13 @@ export async function getDashboard(
 				due: due(period),
 				status: report?.status ?? null,
 				reportId: report?.id ?? null,
-				waitingSince: report?.status === "SUBMITTED" ? (report.events[0]?.createdAt ?? null) : null,
+				reopened: report
+					? wasReopened(report.status, report.events.find((event) => event.action !== "SUBMIT")?.action)
+					: false,
+				waitingSince:
+					report?.status === "SUBMITTED"
+						? (report.events.find((event) => event.action === "SUBMIT")?.createdAt ?? null)
+						: null,
 				approved,
 			};
 		});
@@ -152,6 +158,7 @@ export async function getDashboard(
 						plantCode: row.plant.code,
 						period: cell.period,
 						status: cell.status,
+						reopened: cell.reopened,
 						reportId: cell.reportId,
 					})),
 			),

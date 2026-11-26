@@ -212,7 +212,7 @@ export default function AuditPage() {
 							How each approved figure was worked out, from what the plant typed, and every step since.
 						</PageHeaderDescription>
 					</div>
-					<StatusBadge status={data.status} />
+					<StatusBadge status={data.status} reopened={data.reopened} />
 				</PageHeaderRow>
 			</PageHeader>
 

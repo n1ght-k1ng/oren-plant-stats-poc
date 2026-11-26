@@ -6,9 +6,12 @@ import { readRun } from "./run";
 
 const run = readRun();
 
+/** Signs in and waits until the app has taken the user to their starting page, so the session is in place. */
 async function signIn(page: Page, email: string) {
 	await page.goto("/sign-in");
 	await page.getByTestId(`sign-in-${email}`).click();
+	await page.waitForURL((url) => !url.pathname.startsWith("/sign-in"));
+	await page.waitForLoadState("networkidle");
 }
 
 test.describe("U1: each role starts on its own page", () => {
@@ -88,5 +91,56 @@ test.describe("U5: unsaved figures are never lost silently", () => {
 		);
 		await page.close({ runBeforeUnload: true });
 		expect(await warning).toBe("beforeunload");
+	});
+});
+
+test.describe("U23: a month the Head reopens says Reopened, not Sent back", () => {
+	test("on the owner's list, the month page and the dashboard", async ({ page }) => {
+		const plant = run.plants.import;
+		const period = "2026-08";
+
+		// The owner enters and submits a clean month.
+		await signIn(page, run.owner.email);
+		await page.getByTestId(`month-start-${plant}-${period}`).click();
+		await page.waitForURL(/\/months\/[a-z0-9]+$/);
+		const monthUrl = page.url();
+		for (const [key, value] of [
+			["coal", "11000"],
+			["petcoke", "1500"],
+			["diesel", "95000"],
+			["grid_power", "12300"],
+			["clinker", "101700"],
+		]) {
+			await page.getByTestId(`line-${key}-value`).fill(value);
+		}
+		await page.getByTestId("month-submit-open").click();
+		await page.getByTestId("submit-not-used-furnace_oil").check();
+		await page.getByTestId("submit-confirm").click();
+		await expect(page.getByTestId("status-submitted")).toBeVisible();
+
+		// The reviewer approves it (clinker sits just under 30% of this test plant's capacity, so it is flagged).
+		await signIn(page, run.reviewer.email);
+		await page.goto(monthUrl);
+		await page.getByTestId("review-comment").fill("Checked; accepted.");
+		await page.getByTestId("review-approve").click();
+		await page.waitForURL("**/review");
+
+		// The Head reopens it.
+		await signIn(page, run.head.email);
+		await page.goto(monthUrl);
+		await page.getByTestId("reopen-reason").fill("Auditor's query on the diesel bill.");
+		await page.getByTestId("reopen-submit").click();
+		await expect(page.getByTestId("status-reopened")).toHaveText("Reopened");
+		await expect(page.getByTestId("status-returned")).toHaveCount(0);
+
+		await page.goto("/dashboard");
+		await page.getByTestId("dashboard-quarter").click();
+		await page.getByRole("option", { name: "Q2 FY 2026-27" }).click();
+		await expect(page.getByTestId(`dashboard-cell-${plant}-${period}`)).toContainText("Reopened");
+		await expect(page.getByTestId("dashboard-missing")).toContainText("Reopened by the Head");
+		await expect(page.getByTestId("dashboard-missing")).not.toContainText("Sent back to the plant");
+
+		await signIn(page, run.owner.email);
+		await expect(page.getByTestId(`month-row-${plant}-${period}`)).toContainText("Reopened");
 	});
 });

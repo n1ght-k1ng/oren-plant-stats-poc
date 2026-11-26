@@ -25,6 +25,8 @@ export const dashboardCell = z.object({
 	due: z.boolean(),
 	/** Null when the month hasn't been started. */
 	status: status.nullable(),
+	/** RETURNED because the Head reopened it, not a reviewer's send-back (U23). */
+	reopened: z.boolean(),
 	reportId: z.string().nullable(),
 	/** When a submitted month was last submitted, to show how long it has waited. */
 	waitingSince: z.date().nullable(),
@@ -60,6 +62,7 @@ export const dashboard = z.object({
 				plantCode: z.string(),
 				period: z.string(),
 				status: status.nullable(),
+				reopened: z.boolean(),
 				reportId: z.string().nullable(),
 			}),
 		),

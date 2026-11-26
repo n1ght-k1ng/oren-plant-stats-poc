@@ -12,7 +12,7 @@ export const plantRouter = router({
 	list: protectedProcedure
 		.input(plantListInput)
 		.output(plantSummary.array())
-		.query(({ ctx, input }) => listPlants(ctx.db, { search: input.search })),
+		.query(({ ctx, input }) => listPlants(ctx.db, ctx.user, { search: input.search })),
 
 	byId: protectedProcedure
 		.input(plantByIdInput)

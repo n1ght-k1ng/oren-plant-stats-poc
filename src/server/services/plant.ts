@@ -17,26 +17,26 @@ const plantSummarySelect = {
 } as const;
 
 export type PlantFilters = {
-	companyId?: string;
 	search?: string;
 };
 
-export async function listPlants(db: Db, filters: PlantFilters): Promise<PlantSummary[]> {
+/** The user's own company's plants, optionally filtered by a search term. */
+export async function listPlants(db: Db, user: SessionUser, filters: PlantFilters): Promise<PlantSummary[]> {
 	const search = filters.search?.trim();
 	return db.plant.findMany({
-		where: {
-			companyId: filters.companyId,
-			...(search
+		where: companyScope(
+			user,
+			search
 				? {
 						OR: [
-							{ name: { contains: search, mode: "insensitive" } },
-							{ code: { contains: search, mode: "insensitive" } },
-							{ town: { contains: search, mode: "insensitive" } },
-							{ state: { contains: search, mode: "insensitive" } },
+							{ name: { contains: search, mode: "insensitive" as const } },
+							{ code: { contains: search, mode: "insensitive" as const } },
+							{ town: { contains: search, mode: "insensitive" as const } },
+							{ state: { contains: search, mode: "insensitive" as const } },
 						],
 					}
-				: {}),
-		},
+				: {},
+		),
 		orderBy: [{ code: "asc" }, { createdAt: "asc" }],
 		select: plantSummarySelect,
 	});

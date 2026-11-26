@@ -58,6 +58,19 @@ describe("plant.update", () => {
 	});
 });
 
+describe("plant.list", () => {
+	it("lists only the user's own company's plants", async () => {
+		const ids = (await callerFor(fx.outsider).plant.list({})).map((plant) => plant.id);
+		expect(ids).toContain(fx.otherPlant.id);
+		expect(ids).not.toContain(fx.plant.id);
+	});
+
+	it("does not find another company's plant by search", async () => {
+		const ids = (await callerFor(fx.outsider).plant.list({ search: fx.plant.name })).map((plant) => plant.id);
+		expect(ids).not.toContain(fx.plant.id);
+	});
+});
+
 describe("plant.byId", () => {
 	it("shows a plant of the user's own company", async () => {
 		const detail = await callerFor(fx.dataOwner).plant.byId({ id: fx.plant.id });

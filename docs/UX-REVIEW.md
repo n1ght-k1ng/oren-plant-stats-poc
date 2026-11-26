@@ -58,12 +58,18 @@ Ravi himself was checked for what he actually sees.
 ### Finding work
 
 **U1. Everyone lands on Plants.** **Major.** Affects every role, every day.
+
+> **Fixed** in `77b16d7`.
+
 - Signing in always opens the plant register, the least-used page.
 - Deepak's October has been sent back, but his first screen says nothing about it ([02](ux/02-ravi-landing-plants.jpg)).
 - Vikram has to find Review, and Meera has to find Dashboard.
 - *Fix:* send each role to its own home after sign-in and from `/`: data owners to Monthly data, reviewers to Review, the Head to Dashboard.
 
 **U2. Nothing says "this needs you".** **Major.** Affects data owners and reviewers.
+
+> **Fixed** in `bbb5fc3`.
+
 - Monthly data is a flat list of seven months per plant ([03](ux/03-ravi-monthly-data.jpg)).
 - A sent-back month is one row among them, marked only by an amber badge.
 - There are no counts anywhere: no "Review (5)" and no "1 month to fix".
@@ -72,6 +78,9 @@ Ravi himself was checked for what he actually sees.
   - Show counts next to Monthly data and Review in the sidebar.
 
 **U3. When there's nothing to do, the page doesn't say so.** **Minor.** Affects data owners.
+
+> **Fixed** in `bbb5fc3`.
+
 - Ravi sees seven "Approved / View" rows and must read them all to know he's done. Opening one shows the approved month clearly ([04](ux/04-ravi-october-approved.jpg)).
 - *Fix:* a line at the top: "All your months are approved. November opens on 1 December."
 
@@ -82,11 +91,17 @@ Ravi himself was checked for what he actually sees.
 ### Entering a month
 
 **U5. Unsaved changes are lost without a word.** **Major.** Affects data owners.
+
+> **Fixed** in `dfd76ef`.
+
 - Typing a figure and then leaving by the back link, the sidebar or the user switcher discards it silently.
 - In the walkthrough, 480 became 470 again on return.
 - *Fix:* warn before leaving with unsaved changes, both for in-app navigation and on closing the tab. Or save the draft automatically a moment after typing stops.
 
 **U6. Two identical grey buttons, and "All Changes Saved" on an empty month.** **Major.** Affects data owners ([05](ux/05-owner-form-empty-grinding-unit.jpg)).
+
+> **Fixed** in `e4e78c1`.
+
 - A month nobody has touched shows a disabled "All Changes Saved" over a disabled "Submit for Review". The two are the same grey.
 - The reason Submit is blocked is small grey text underneath.
 - *Fix:*
@@ -98,6 +113,9 @@ Ravi himself was checked for what he actually sees.
 - *Fix:* show it only once the month has been submitted. Call it "History" for data owners.
 
 **U8. Three ways to say "nothing".** **Minor.** Affects data owners.
+
+> **Fixed** in `badc940`. Wording only: the N/A tick box on optional items is still there (see the table under Prioritised).
+
 - An optional item can be left blank, ticked N/A, or confirmed as "not used this month" at submission. All three mean much the same.
 - The read-only view then shows "Not used this month" this month and "N/A" for last month ([19](ux/19-reviewer-flagged-month.jpg)).
 - *Fix:*
@@ -137,6 +155,9 @@ Ravi himself was checked for what he actually sees.
 - Clashes with typed values are shown side by side.
 
 **U14. What blocks "Fill the Form" is hidden below the fold.** **Major.** Affects data owners.
+
+> **Fixed** in `af35d0e`.
+
 - In Hetal's import, the "choose for each" section and the "Answer 2 questions and 2 choices" line sit below the dialog's visible area. The button is simply disabled.
 - *Fix:*
   - Show a sticky line beside the button: "2 questions and 3 choices left".
@@ -172,6 +193,9 @@ Ravi himself was checked for what he actually sees.
 **U22. Fix and resubmit takes four clicks.** No action needed. Credit: "Fix and Resubmit" in the list, the comment shown first, and the change listed in the history afterwards.
 
 **U23. A reopened month says "Sent back".** **Major.** Affects data owners, Meera and auditors.
+
+> **Fixed** in `6cdc0e6`.
+
 - When Meera reopens an approved month, it shows "Sent back" in the owner's list, on the month, on the dashboard ("Sent back to the plant") and in the queue history.
 - The banner says "Reopened by Meera Iyer", but everything else implies a reviewer rejected it.
 - To a board or auditor, a reopened approved figure is a different event.
@@ -188,6 +212,9 @@ Ravi himself was checked for what he actually sees.
 ## Reviewers
 
 **U26. On a phone, the Review button is cut off.** **Major.** Affects reviewers on phones ([30](ux/30-phone-review-queue.jpg)).
+
+> **Fixed** in `48787ab`.
+
 - The queue table is wider than the screen. Only "Re" of the button shows, and the table doesn't scroll.
 - *Fix:* on narrow screens, show the queue as cards (plant, month, flags, Review), or let the table scroll sideways.
 
@@ -200,6 +227,9 @@ Ravi himself was checked for what he actually sees.
 - *Fix:* show the flag in the row, for example "Diesel +54.87% vs September".
 
 **U29. After approving, the queue briefly lists the month just approved.** **Major.** Affects reviewers on slower connections.
+
+> **Fixed** in `8e570eb`.
+
 - Returning to the queue shows the cached list first, then refetches.
 - The walkthrough clicked a row that vanished under it. Locally that's milliseconds; on Vercel with Neon it may be visible.
 - The server never approves twice; the database confirmed one approval each.
@@ -225,6 +255,8 @@ Ravi himself was checked for what he actually sees.
 
 **U35. "Not used this month" this month, "N/A" last month.** **Polish.** See U8 ([19](ux/19-reviewer-flagged-month.jpg)).
 
+> **Fixed** in `badc940`.
+
 ## Priya, owner and reviewer
 
 **U36. Her own plant's months sit among the ones she can act on.** **Minor.** Affects people with both roles ([15](ux/15-priya-queue.jpg)).
@@ -242,8 +274,8 @@ Ravi himself was checked for what he actually sees.
 - This is the strongest screen in the app.
 
 Gaps:
-- **U38a. Abbreviations.** **Minor.** "S1" and "S2" in the grid mean nothing to a board reader. *Fix:* "Scope 1" and "Scope 2" in full, with a one-line definition under the totals: "Scope 1: fuel burned and clinker made. Scope 2: grid power bought."
-- **U38b. Leaving the dashboard loses the quarter.** **Minor.** After tracing a Q2 figure, the audit trail's back link goes to the month, not the dashboard, and the dashboard then reopens on Q3. *Fix:* keep the quarter in the address (`/dashboard?quarter=2026-Q2`), and send the audit trail back to where she came from.
+- **U38a. Abbreviations.** **Minor.** **Fixed** in `0624b95`. "S1" and "S2" in the grid mean nothing to a board reader. *Fix:* "Scope 1" and "Scope 2" in full, with a one-line definition under the totals: "Scope 1: fuel burned and clinker made. Scope 2: grid power bought."
+- **U38b. Leaving the dashboard loses the quarter.** **Minor.** **Fixed** in `9b70ac4`. After tracing a Q2 figure, the audit trail's back link goes to the month, not the dashboard, and the dashboard then reopens on Q3. *Fix:* keep the quarter in the address (`/dashboard?quarter=2026-Q2`), and send the audit trail back to where she came from.
 - **U38c. No sign of months approved over a flag.** **Minor.** An auditor would ask which figures were approved despite a warning. The dashboard shows no difference. *Fix:* a small marker on those cells, linking to the approval comment.
 - **U38d. No export.** **Minor.** A board pack needs these figures in a document. There's no CSV or print view. This can wait.
 
@@ -262,17 +294,25 @@ Gaps:
 
 **A1. Secondary text, links and warning text fail contrast.** **Major.** Affects everyone, most of all people with low vision or using laptops outdoors.
 
-| Text | Today | Ratio | Needed | Suggested | New ratio |
+> **Fixed** in `0ec3c7c`.
+
+| Text | Before | Ratio | Needed | Now (A1) | New ratio |
 |---|---|---|---|---|---|
 | Secondary text on white (dates, helper text, notes, "Waiting 2 days") | `#718096` | 4.02:1 | 4.5:1 | `#4a5568` (the app's own gray600) | 7.53:1 |
 | Secondary text on grey table headers | `#718096` on `#edf2f7` | 3.56:1 | 4.5:1 | `#4a5568` | 6.68:1 |
 | Links | `#4682b4` | 4.11:1 | 4.5:1 | `#2b6cb0` | 5.42:1 |
 | Warning text on the warning background | `#c6883d` on `#fefcbf` | 2.85:1 | 4.5:1 | `#975a16` | 5.25:1 |
 | Placeholder text | `#a0aec0` | 2.26:1 | (exempt, but hard to read) | `#718096` | 4.02:1 |
+| Secondary text on the page background | `#718096` | 3.83:1 | 4.5:1 | `#4a5568` | 7.18:1 |
+
+The "Now" colours are in `src/styles/globals.css` since `0ec3c7c`, and the new ratios were measured again from those tokens after the change. `tests/contrast.test.ts` reads the tokens and requires 4.5:1 for each text pair; on the old colours it fails exactly the five that needed it.
 
 The badge colours and the error and body text all pass. These colours come from the starter's design tokens, but they are on every screen of v1.
 
 **A2. Keyboard focus is nearly invisible on the sign-in list.** **Major.** Affects keyboard users.
+
+> **Fixed** in `491f1a1`.
+
 - Tabbing through the sample users changes only the background, from white to `#f7fafc`. That's almost no difference, so you can't see where you are ([01](ux/01-sign-in.jpg)).
 - Buttons and inputs elsewhere do have a visible focus ring.
 - *Fix:* the same `focus-visible` ring the buttons use.
@@ -314,24 +354,31 @@ No page scrolled sideways at either size.
 
 These are the ones a reviewer clicking through the live link for ten minutes is most likely to hit, or that weaken the brief's own points.
 
-1. **U1 Role-based landing.** Small change, big effect on every first impression.
-2. **U5 Warn before losing unsaved changes.** Losing typed figures is the worst feeling the app can give a plant team.
-3. **U23 Show "Reopened", not "Sent back".** Meera and auditors read these labels.
-4. **U26 Phone review queue.** The main reviewer action is cut off.
-5. **U2 "To do" at the top of Monthly data, and counts in the sidebar.** Reviewers' time on what needs a look is brief point 4.
-6. **A1 and A2 Contrast and the sign-in focus ring.** Changes to three colour values and one class, checked against WCAG.
-7. **U6 Save state and the disabled buttons.**
-8. **U14 Import blocker hidden below the fold.**
-9. **U38a "Scope 1" and "Scope 2" in full on the dashboard.**
-10. **U29 Stale queue after approving.** Worth doing before the deployed demo, where latency makes it visible.
+| # | Finding | Fixed | Kept fixed by |
+|---|---|---|---|
+| 1 | **U1** Role-based landing | `77b16d7` | `tests/home.test.ts`; Playwright: each role lands on its page |
+| 2 | **U5** Warn before losing unsaved changes | `dfd76ef` | Playwright: leaving by a link and by reload both warn |
+| 3 | **U23** "Reopened", not "Sent back" | `6cdc0e6` | API tests; Playwright: the owner's list and the dashboard say "Reopened" |
+| 4 | **U26** Phone review queue | `48787ab` | Playwright at 390 px: the Review button is fully on screen |
+| 5 | **U2** "To do" on Monthly data, counts in the sidebar (and **U3**, the empty state) | `bbb5fc3` | `tests/todo.test.ts`; Playwright: counts, order, reviewer count |
+| 6a | **A1** Contrast | `0ec3c7c` | `tests/contrast.test.ts` (fails on the old colours) |
+| 6b | **A2** Sign-in focus ring | `491f1a1` | Playwright: tabbing shows a ring (fails on the old class) |
+| 7 | **U6** Save state and the disabled buttons | `e4e78c1` | Playwright: save-state words, Submit lists what's missing and focuses it |
+| 8 | **U14** Import blocker below the fold | `af35d0e` | Playwright at 1366×620: count shown, first question scrolled into view (fails without the scroll) |
+| 9 | **U38a** "Scope 1" and "Scope 2" in full | `0624b95` | Playwright: definition shown, no "S1"/"S2" |
+| 10 | **U29** Stale queue after approving | `8e570eb` | Playwright with a 3 s queue refresh: back at once, month gone (fails with either half removed) |
+| 11 | **U38b** Quarter in the dashboard address | `9b70ac4` | `tests/quarterParam.test.ts`; Playwright: reload and audit-trail round trip keep Q1 (fails with the old back link) |
+| 12 | **U8/U35** One wording for "nothing" | `badc940` | `tests/naWording.test.ts`, API test; Playwright: both columns say "Not used this month" (fails with the old column) |
+
+The Playwright checks are in `e2e/ux-fixes.spec.ts`. U8 is only partly done: the wording is now the same everywhere, but its other suggestion, dropping the N/A tick box on optional items, changes how owners enter data and is left for a decision.
 
 ### Can wait
 
 - **The form on a phone** (U9). Plants mostly enter on desktops, but it should be fixed soon after.
 - **Reviewer speed-ups:** the flag shown in the queue (U28), a change column (U32), "Approve and open next" (U30), and an imported-values note (U33).
-- **Owner context:** who else owns the plant (U21), "waiting since" (U25), next month's opening date (U4), and a line saying everything's done (U3).
-- **Meera's extras:** the quarter kept in the address (U38b), a marker for months approved over a flag (U38c), export (U38d), and Reopen on the audit trail (U39).
-- **Wording and polish:** U7, U8, U10, U11, U12, U15 to U20, U27, U31, U35, U36, A3, L1, L2 and W2.
+- **Owner context:** who else owns the plant (U21), "waiting since" (U25), and next month's opening date (U4). (U3 is done, with U2.)
+- **Meera's extras:** a marker for months approved over a flag (U38c), export (U38d), and Reopen on the audit trail (U39).
+- **Wording and polish:** U7, the rest of U8 (the N/A tick box), U10, U11, U12, U15 to U20, U27, U31, U36, A3, L1, L2 and W2.
 
 ## What stopped the run
 

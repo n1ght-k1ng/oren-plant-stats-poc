@@ -82,7 +82,7 @@ export type MonthLine = z.infer<typeof monthLine>;
 
 const checkLine = z.discriminatedUnion("state", [
 	z.object({ state: z.literal("VALUE"), value: decimalString }),
-	z.object({ state: z.literal("NA") }),
+	z.object({ state: z.literal("NA"), naReason: z.enum(["NOT_APPLICABLE", "NOT_USED_THIS_MONTH"]).optional() }),
 	z.object({ state: z.literal("NOT_ENTERED") }),
 ]);
 

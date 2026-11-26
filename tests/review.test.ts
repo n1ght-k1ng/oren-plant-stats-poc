@@ -306,7 +306,12 @@ describe("last month's values beside this month's (3.5b)", () => {
 		const view = await callerFor(reviewer).month.byId({ reportId: october });
 		expect(view.checkContext.previous).toMatchObject({
 			period: "2026-09",
-			lines: { grid_power: { state: "VALUE", value: "12300" }, coal: { state: "VALUE", value: "11000" } },
+			lines: {
+				grid_power: { state: "VALUE", value: "12300" },
+				coal: { state: "VALUE", value: "11000" },
+				// With its reason, so last month's column words it as this month's does (U35).
+				furnace_oil: { state: "NA", naReason: "NOT_USED_THIS_MONTH" },
+			},
 		});
 		expect(view.flags.find((flag) => flag.code === "LARGE_CHANGE")).toMatchObject({
 			itemKeys: ["grid_power"],

@@ -6,6 +6,7 @@
 import { ITEMS, type ItemKey, expectationFor, itemByKey } from "@/config/items";
 import type { CheckLines } from "@/lib/checks";
 import { toCanonical } from "@/lib/conversion";
+import { NOT_USED_LABEL } from "@/lib/naWording";
 import { parseQuantity } from "@/lib/quantity";
 import type { LineInput, MonthLine } from "@/lib/schemas/month";
 
@@ -45,7 +46,7 @@ export function initialForm(lines: MonthLine[]): FormState {
 			state[item.key] = {
 				...base,
 				mode: "na",
-				naLabel: line.naReason === "NOT_USED_THIS_MONTH" ? "Not used this month" : undefined,
+				naLabel: line.naReason === "NOT_USED_THIS_MONTH" ? NOT_USED_LABEL : undefined,
 			};
 		} else {
 			state[item.key] = base;

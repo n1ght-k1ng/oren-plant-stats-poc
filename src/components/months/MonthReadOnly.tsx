@@ -7,6 +7,7 @@ import { EmptyState, EmptyStateDescription, EmptyStateIcon, EmptyStateTitle } fr
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ITEMS, type ItemDefinition } from "@/config/items";
 import { formatDecimal } from "@/lib/format";
+import { naLabel } from "@/lib/naWording";
 import { periodLabel } from "@/lib/periods";
 import type { MonthDetail, MonthLine } from "@/lib/schemas/month";
 
@@ -15,7 +16,7 @@ function shownValue(line: MonthLine | undefined): { main: string; converted: str
 		return { main: "Not entered", converted: null };
 	}
 	if (line.state === "NA") {
-		return { main: line.naReason === "NOT_USED_THIS_MONTH" ? "Not used this month" : "N/A", converted: null };
+		return { main: naLabel(line.naReason), converted: null };
 	}
 	const canonical = `${formatDecimal(line.value ?? "")} ${line.unit}`;
 	const typed = line.enteredValue && line.enteredUnit ? `${line.enteredValue} ${line.enteredUnit}` : null;
@@ -32,7 +33,7 @@ function previousValue(previous: PreviousLines, item: ItemDefinition): string {
 	if (!line || line.state === "NOT_ENTERED") {
 		return "Not entered";
 	}
-	return line.state === "NA" ? "N/A" : `${formatDecimal(line.value)} ${item.canonicalUnit}`;
+	return line.state === "NA" ? naLabel(line.naReason) : `${formatDecimal(line.value)} ${item.canonicalUnit}`;
 }
 
 /**

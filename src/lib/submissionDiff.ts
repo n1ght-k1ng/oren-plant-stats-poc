@@ -4,6 +4,7 @@
  */
 import { ITEMS } from "@/config/items";
 import { formatDecimal } from "@/lib/format";
+import { naPhrase } from "@/lib/naWording";
 import type { SubmittedLine } from "@/lib/schemas/report";
 
 export type SubmissionChange = { itemKey: string; label: string; from: string; to: string };
@@ -14,7 +15,7 @@ export function describeSubmitted(line: SubmittedLine | undefined): string {
 		return "not entered";
 	}
 	if (line.state === "NA") {
-		return line.naReason === "NOT_USED_THIS_MONTH" ? "not used this month" : "N/A";
+		return naPhrase(line.naReason);
 	}
 	return `${formatDecimal(line.value)} ${line.unit}`;
 }

@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { formatTonnes } from "@/lib/co2";
 import { sumDecimals } from "@/lib/decimal";
 import { formatDateTime, formatDecimal } from "@/lib/format";
+import { naLabel } from "@/lib/naWording";
 import { periodLabel } from "@/lib/periods";
 import { parseQuarterParam, quarterParam } from "@/lib/quarterParam";
 import { ROLE_LABELS, type Role } from "@/lib/roles";
@@ -39,11 +40,7 @@ function typed(line: TracedLine): string {
 	if (line.typedValue && line.typedUnit) {
 		return `${line.typedValue} ${line.typedUnit}`;
 	}
-	return line.state === "NA"
-		? line.naReason === "NOT_USED_THIS_MONTH"
-			? "Not used this month"
-			: "N/A"
-		: "Not recorded";
+	return line.state === "NA" ? naLabel(line.naReason) : "Not recorded";
 }
 
 function ScopeTable({ scope, lines, totalKg }: { scope: 1 | 2; lines: TracedLine[]; totalKg: string }) {

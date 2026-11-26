@@ -12,6 +12,7 @@ import { FIRST_REPORTING_PERIOD } from "@/config/reporting";
 import { type CheckLines, hasWarnings, runChecks } from "@/lib/checks";
 import { toCanonical } from "@/lib/conversion";
 import { toDecimalString } from "@/lib/decimal";
+import { naPhrase } from "@/lib/naWording";
 import { cannotOpenReason, currentPeriod, parsePeriod } from "@/lib/periods";
 import { checkPermission } from "@/lib/permissions";
 import { parseQuantity } from "@/lib/quantity";
@@ -77,7 +78,7 @@ function toCheckLines(lines: StoredLine[]): CheckLines {
 			line.state === "VALUE" && line.value
 				? { state: "VALUE", value: toDecimalString(line.value) }
 				: line.state === "NA"
-					? { state: "NA" }
+					? { state: "NA", naReason: line.naReason ?? undefined }
 					: { state: "NOT_ENTERED" };
 	}
 	return result;
@@ -398,7 +399,7 @@ function describe(line: Pick<LineUpdate, "state" | "enteredValue" | "enteredUnit
 		return `${line.enteredValue ?? line.value} ${line.enteredUnit ?? line.unit}`;
 	}
 	if (line.state === "NA") {
-		return line.naReason === "NOT_USED_THIS_MONTH" ? "not used this month" : "N/A";
+		return naPhrase(line.naReason);
 	}
 	return "not entered";
 }
@@ -557,7 +558,7 @@ export async function submitMonth(
 				changes: Object.fromEntries(
 					toConfirm.map((line) => [
 						itemByKey(line.itemKey as ItemKey).label,
-						{ from: "not entered", to: "not used this month" },
+						{ from: "not entered", to: naPhrase("NOT_USED_THIS_MONTH") },
 					]),
 				),
 			});

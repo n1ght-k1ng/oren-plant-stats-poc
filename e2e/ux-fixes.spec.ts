@@ -406,3 +406,43 @@ test.describe("U38b: the dashboard keeps its quarter, and the audit trail return
 		await expect(page.getByTestId("audit-back")).toHaveText("Back to the month");
 	});
 });
+
+test.describe("U8/U35: 'Not used this month' reads the same this month and last month", () => {
+	test("the reviewer sees the same words in both columns", async ({ page }) => {
+		const plant = run.plants.import;
+		const LINES: [string, string][] = [
+			["coal", "11000"],
+			["petcoke", "1500"],
+			["diesel", "95000"],
+			["grid_power", "12300"],
+			["clinker", "101700"],
+		];
+		const submit = async (period: string) => {
+			await signIn(page, run.owner.email);
+			await page.getByTestId(`todo-action-${plant}-${period}`).click();
+			await page.waitForURL(/\/months\/[a-z0-9]+$/);
+			const url = page.url();
+			for (const [key, value] of LINES) {
+				await page.getByTestId(`line-${key}-value`).fill(value);
+			}
+			await page.getByTestId("month-submit-open").click();
+			await page.getByTestId("submit-not-used-furnace_oil").check();
+			await page.getByTestId("submit-confirm").click();
+			await expect(page.getByTestId("status-submitted")).toBeVisible();
+			return url;
+		};
+
+		const april = await submit("2026-04");
+		await signIn(page, run.reviewer.email);
+		await page.goto(april);
+		await page.getByTestId("review-comment").fill("Checked; accepted.");
+		await page.getByTestId("review-approve").click();
+		await page.waitForURL("**/review");
+
+		const may = await submit("2026-05");
+		await signIn(page, run.reviewer.email);
+		await page.goto(may);
+		await expect(page.getByTestId("readonly-furnace_oil")).toContainText("Not used this month");
+		await expect(page.getByTestId("readonly-previous-furnace_oil")).toHaveText("Not used this month");
+	});
+});

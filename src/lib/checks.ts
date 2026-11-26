@@ -1,3 +1,11 @@
+import {
+	INTEGRATED_RANGES,
+	KILN_FUEL_ENERGY_GJ_PER_TONNE,
+	MONTH_ON_MONTH_CHANGE_LIMIT,
+	type Range,
+} from "@/config/checks";
+import { ITEMS, type ItemKey, expectationFor, itemByKey } from "@/config/items";
+import { D, toD } from "@/lib/decimal";
 /**
  * Plausibility checks (docs/DECISIONS.md D7, P5, P7, U2, U6, C1). Pure: the caller supplies the month's lines,
  * the capacity in effect that month, and the last approved month. Flags only warn; they never block.
@@ -7,18 +15,14 @@
  * A check whose inputs are not all entered yet is skipped rather than worked out from a blank, so flags can
  * update live while the data owner types (U2).
  */
-import {
-	INTEGRATED_RANGES,
-	KILN_FUEL_ENERGY_GJ_PER_TONNE,
-	MONTH_ON_MONTH_CHANGE_LIMIT,
-	type Range,
-} from "@/config/checks";
-import { ITEMS, type ItemKey, expectationFor, itemByKey } from "@/config/items";
-import { D, toD } from "@/lib/decimal";
+import type { NaReason } from "@/lib/naWording";
 import { daysInMonth, periodLabel } from "@/lib/periods";
 import type { CheckFlag } from "@/lib/schemas/report";
 
-export type CheckLine = { state: "VALUE"; value: string } | { state: "NA" } | { state: "NOT_ENTERED" };
+export type CheckLine =
+	| { state: "VALUE"; value: string }
+	| { state: "NA"; naReason?: NaReason }
+	| { state: "NOT_ENTERED" };
 /** A month's lines by item, in canonical units. A missing item counts as not entered. */
 export type CheckLines = Partial<Record<ItemKey, CheckLine>>;
 

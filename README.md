@@ -26,6 +26,7 @@ react-hook-form, Tailwind CSS 4 with Radix primitives, Biome and Vitest. Node 22
 | `npm run lint` | Biome: lint and format check |
 | `npm run format` | Biome: fix what it can |
 | `npm test` | Vitest |
+| `npm run test:e2e` | Playwright end-to-end tests: the main loop and an import. Each run creates its own E2E company and deletes it after |
 | `npm run db:push` | Apply `prisma/schema.prisma` to the database |
 | `npm run db:seed` | Add the sample data (safe to run again) |
 | `npm run db:studio` | Browse the database |

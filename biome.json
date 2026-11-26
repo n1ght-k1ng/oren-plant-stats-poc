@@ -2,7 +2,16 @@
 	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
 	"vcs": { "enabled": false },
 	"files": {
-		"ignore": ["node_modules", ".next", "out", "next-env.d.ts", "src/styles/**", "samples/**"]
+		"ignore": [
+			"node_modules",
+			".next",
+			"out",
+			"next-env.d.ts",
+			"src/styles/**",
+			"samples/**",
+			"test-results",
+			"playwright-report"
+		]
 	},
 	"organizeImports": { "enabled": true },
 	"formatter": {
@@ -23,7 +32,14 @@
 	},
 	"overrides": [
 		{
-			"include": ["src/pages/**", "*.config.js", "*.config.mjs", "*.config.ts"],
+			"include": [
+				"src/pages/**",
+				"*.config.js",
+				"*.config.mjs",
+				"*.config.ts",
+				"e2e/global-setup.ts",
+				"e2e/global-teardown.ts"
+			],
 			"linter": { "rules": { "style": { "noDefaultExport": "off" } } }
 		}
 	]

@@ -5,3 +5,6 @@ out
 .env*.local
 .vercel
 *.tsbuildinfo
+/test-results
+/playwright-report
+/e2e/.run.json

@@ -24,6 +24,8 @@ npm run format             # Biome autofix
 npm test
 npx vitest run tests/plant.test.ts                  # one file
 npx vitest run tests/plant.test.ts -t "plant.byId"  # tests matching a name
+npm run test:e2e           # Playwright: the main loop and an import, against localhost:3000 (starts dev if needed)
+E2E_BASE_URL=https://… npm run test:e2e   # against a deployed app; DATABASE_URL must be that app's database
 ```
 
 - Every test file needs `DATABASE_URL`, even pure ones like `units.test.ts`, because `tests/setup.ts` checks for it. Tests write to and delete from that database, so do not point them at the live site's. Run `db:push` on it first.

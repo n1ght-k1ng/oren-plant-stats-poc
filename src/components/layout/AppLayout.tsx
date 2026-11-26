@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { type ReactNode, useEffect } from "react";
 
 import { UserSwitcher } from "@/components/layout/UserSwitcher";
+import { todoItems } from "@/components/months/todo";
 import { OrenButton } from "@/components/ui/OrenButton";
 import { AppShell, AppShellContent, AppShellMain, TopBar } from "@/components/ui/app-shell";
 import {
@@ -66,6 +67,15 @@ export function AppLayout({ title, children }: { title: string; children: ReactN
 	const router = useRouter();
 	const utils = api.useContext();
 	const me = api.session.me.useQuery();
+	// Counts beside Monthly data and Review: what needs this person now (docs/UX-REVIEW.md U2).
+	const isOwner = me.data ? hasRole(me.data, ROLES.DATA_OWNER) : false;
+	const isReviewer = me.data ? hasRole(me.data, ROLES.REVIEWER, ROLES.SUSTAINABILITY_HEAD) : false;
+	const mine = api.month.mine.useQuery(undefined, { enabled: isOwner });
+	const queue = api.review.queue.useQuery(undefined, { enabled: isReviewer });
+	const counts: Record<string, number | undefined> = {
+		"/months": mine.data ? todoItems(mine.data).length : undefined,
+		"/review": queue.data ? queue.data.filter((entry) => entry.canReview).length : undefined,
+	};
 	const isSignedOut = me.isSuccess && me.data === null;
 
 	useEffect(() => {
@@ -89,6 +99,7 @@ export function AppLayout({ title, children }: { title: string; children: ReactN
 								icon={item.icon}
 								label={item.label}
 								active={router.pathname.startsWith(item.href)}
+								badge={counts[item.href] ? counts[item.href] : undefined}
 								data-testid={`nav-${item.href.slice(1)}`}
 							/>
 						))}

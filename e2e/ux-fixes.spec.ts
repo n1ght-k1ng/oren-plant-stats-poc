@@ -185,3 +185,34 @@ test.describe("U26: the review queue works on a 390 px phone", () => {
 		await phone.close();
 	});
 });
+
+test.describe("U2: what needs doing is on the first screen, with counts in the sidebar", () => {
+	test("the owner's To do list matches the sidebar count, urgent months first", async ({ page }) => {
+		await signIn(page, run.owner.email);
+		const todo = page.getByTestId("months-todo");
+		await expect(todo).toBeVisible();
+		const rows = todo.locator('[data-testid^="todo-"]:not([data-testid^="todo-action-"])');
+		const count = await rows.count();
+		expect(count).toBeGreaterThan(0);
+		await expect(todo.getByRole("heading")).toHaveText(`To do (${count})`);
+		await expect(page.getByTestId("nav-months")).toContainText(String(count));
+
+		const labels = await rows.allInnerTexts();
+		const urgent = labels.map((label) => /Reopened by the Head|Sent back by a reviewer/.test(label));
+		// Every urgent row comes before every other row.
+		expect(urgent.indexOf(false) === -1 || urgent.lastIndexOf(true) < urgent.indexOf(false)).toBe(true);
+	});
+
+	test("the reviewer's sidebar counts the months he can act on", async ({ page }) => {
+		await signIn(page, run.reviewer.email);
+		await page.waitForURL("**/review");
+		await page.waitForLoadState("networkidle");
+		const actionable = await page.locator('[data-testid^="review-open-"]').count();
+		const nav = page.getByTestId("nav-review");
+		if (actionable === 0) {
+			await expect(nav).toHaveText("Review");
+		} else {
+			await expect(nav).toContainText(String(actionable));
+		}
+	});
+});

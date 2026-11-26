@@ -175,7 +175,7 @@ Server tests call the API with `callerFor(user)` (from `tests/helpers.ts`). Each
 
 | Step | | Size |
 |---|---|---|
-| 6.1 **Seed months covering every status:** approved (one approved with flags and a comment), submitted, returned with a comment, and reopened. Built with the app's own services, so the history is real. | MUST | M |
+| 6.1 **Seed months covering every status:** approved (one approved with flags and a comment), submitted, returned with a comment, and reopened. **Created by the seed script** (`prisma/seed.ts`) calling the app's services, so the history is real and deliberate. Never created by driving sample users' accounts in a browser: browser test runs are local only, and their months are removed afterwards by ID. | MUST | M |
 
 ## Phase 7: Deploy, end-to-end tests and write-up
 

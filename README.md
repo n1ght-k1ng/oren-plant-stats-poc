@@ -29,7 +29,7 @@ react-hook-form, Tailwind CSS 4 with Radix primitives, Biome and Vitest. Node 22
 | `npm run db:push` | Apply `prisma/schema.prisma` to the database |
 | `npm run db:seed` | Add the sample data (safe to run again) |
 | `npm run db:studio` | Browse the database |
-| `npm run db:reset-demo` | Clear all monthly report data, keeping plants and users. Local databases only; ask before using `--not-local` |
+| `npm run db:reset-demo` | List monthly report data with each month's ID; deletes nothing. `-- --confirm <id> <id>` deletes exactly those months; `-- --all` deletes every month after you type `yes`. Plants and users are kept. Local databases only; ask before using `--not-local` |
 
 ## Tests
 

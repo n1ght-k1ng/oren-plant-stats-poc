@@ -14,6 +14,7 @@ import { formatTonnes } from "@/lib/co2";
 import { sumDecimals } from "@/lib/decimal";
 import { formatDateTime, formatDecimal } from "@/lib/format";
 import { periodLabel } from "@/lib/periods";
+import { parseQuarterParam, quarterParam } from "@/lib/quarterParam";
 import { ROLE_LABELS, type Role } from "@/lib/roles";
 import type { MonthAudit, TimelineEntry, TracedLine } from "@/lib/schemas/audit";
 import { api } from "@/utils/api";
@@ -157,6 +158,8 @@ function Timeline({ audit }: { audit: MonthAudit }) {
 /** The audit trail (3.8): how a month's approved figures came to be, for an auditor. */
 export default function AuditPage() {
 	const router = useRouter();
+	// Opened from a dashboard figure: go back to that quarter (U38b).
+	const fromQuarter = router.query.from === "dashboard" ? parseQuarterParam(router.query.quarter) : null;
 	const reportId = typeof router.query.id === "string" ? router.query.id : "";
 	const audit = api.month.audit.useQuery({ reportId }, { enabled: reportId !== "", retry: false });
 
@@ -195,12 +198,12 @@ export default function AuditPage() {
 	return (
 		<AppLayout title={`Audit: ${data.plant.code} ${periodLabel(data.period)}`}>
 			<Link
-				href={`/months/${data.id}`}
+				href={fromQuarter ? `/dashboard?quarter=${quarterParam(fromQuarter)}` : `/months/${data.id}`}
 				className="mb-4 inline-flex items-center gap-1.5 text-sm text-text-link hover:text-text-link-hover"
 				data-testid="audit-back"
 			>
 				<ArrowLeft className="size-4" aria-hidden />
-				Back to the month
+				{fromQuarter ? "Back to the dashboard" : "Back to the month"}
 			</Link>
 			<PageHeader bordered>
 				<PageHeaderRow>

@@ -350,3 +350,59 @@ test.describe("U29: an approved month never reappears in the queue", () => {
 		expect(await row.count()).toBe(0);
 	});
 });
+
+test.describe("U38b: the dashboard keeps its quarter, and the audit trail returns to it", () => {
+	test("Q1 survives a reload and a trip to an audit trail and back", async ({ page }) => {
+		const plant = run.plants.loop;
+		const period = "2026-05";
+
+		// An approved month in Q1.
+		await signIn(page, run.owner.email);
+		await page.getByTestId(`todo-action-${plant}-${period}`).click();
+		await page.waitForURL(/\/months\/[a-z0-9]+$/);
+		const monthUrl = page.url();
+		for (const [key, value] of [
+			["coal", "35000"],
+			["petcoke", "7600"],
+			["diesel", "160000"],
+			["grid_power", "4500"],
+			["clinker", "285800"],
+		]) {
+			await page.getByTestId(`line-${key}-value`).fill(value);
+		}
+		await page.getByTestId("month-submit-open").click();
+		await page.getByTestId("submit-not-used-furnace_oil").check();
+		await page.getByTestId("submit-confirm").click();
+		await expect(page.getByTestId("status-submitted")).toBeVisible();
+		await signIn(page, run.reviewer.email);
+		await page.goto(monthUrl);
+		await page.getByTestId("review-comment").fill("Checked; accepted.");
+		await page.getByTestId("review-approve").click();
+		await page.waitForURL("**/review");
+
+		await signIn(page, run.head.email);
+		await page.waitForURL("**/dashboard");
+		// The default quarter depends on which months exist, so choose Q2 and then Q1: the second is always a change.
+		await page.getByTestId("dashboard-quarter").click();
+		await page.getByRole("option", { name: "Q2 FY 2026-27" }).click();
+		await expect(page).toHaveURL(/\/dashboard\?quarter=2026-Q2$/);
+		await page.getByTestId("dashboard-quarter").click();
+		await page.getByRole("option", { name: "Q1 FY 2026-27" }).click();
+		// A shallow address change fires no load event, so poll the address rather than wait for a navigation.
+		await expect(page).toHaveURL(/\/dashboard\?quarter=2026-Q1$/);
+		await page.reload();
+		await expect(page.getByTestId("dashboard-quarter")).toContainText("Q1 FY 2026-27");
+
+		await page.getByTestId(`dashboard-cell-${plant}-${period}`).click();
+		await page.waitForURL(/\/audit\?from=dashboard&quarter=2026-Q1$/);
+		await expect(page.getByTestId("audit-back")).toHaveText("Back to the dashboard");
+		await page.getByTestId("audit-back").click();
+		await page.waitForURL(/\/dashboard\?quarter=2026-Q1$/);
+		await expect(page.getByTestId("dashboard-quarter")).toContainText("Q1 FY 2026-27");
+		await expect(page.getByTestId(`dashboard-cell-${plant}-${period}`)).toContainText("Scope 1");
+
+		// Reached from the month instead, it still goes back to the month.
+		await page.goto(`${monthUrl}/audit`);
+		await expect(page.getByTestId("audit-back")).toHaveText("Back to the month");
+	});
+});

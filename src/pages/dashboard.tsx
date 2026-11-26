@@ -1,6 +1,6 @@
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/router";
 
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatusBadge } from "@/components/months/StatusBadge";
@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatTonnes } from "@/lib/co2";
 import { periodLabel } from "@/lib/periods";
+import { parseQuarterParam, quarterParam } from "@/lib/quarterParam";
 import type { Dashboard, DashboardCell } from "@/lib/schemas/dashboard";
 import { cn } from "@/lib/utils";
 import { api } from "@/utils/api";
@@ -40,7 +41,7 @@ function Tonnes({ kg, className }: { kg: string; className?: string }) {
 }
 
 /** One plant-month. An approved figure links to its audit trail; anything else shows its status and no number. */
-function Cell({ cell, code }: { cell: DashboardCell; code: string }) {
+function Cell({ cell, code, quarter }: { cell: DashboardCell; code: string; quarter: string }) {
 	const testId = `dashboard-cell-${code}-${cell.period}`;
 	if (!cell.due) {
 		return (
@@ -52,7 +53,7 @@ function Cell({ cell, code }: { cell: DashboardCell; code: string }) {
 	if (cell.approved && cell.reportId) {
 		return (
 			<Link
-				href={`/months/${cell.reportId}/audit`}
+				href={`/months/${cell.reportId}/audit?from=dashboard&quarter=${quarter}`}
 				className="group flex flex-col rounded-md px-2 py-1 text-sm hover:bg-surface-hover"
 				data-testid={testId}
 			>
@@ -188,8 +189,10 @@ function CompanyFigure({
 
 /** Flow 4: where every plant and month stands, and the approved CO2 Meera can take to the board. */
 export default function DashboardPage() {
-	const [chosen, setChosen] = useState<{ fyStartYear: number; quarter: number } | null>(null);
-	const overview = api.dashboard.overview.useQuery(chosen, { keepPreviousData: true });
+	// The quarter lives in the address, so reloading or coming back from an audit trail keeps it (U38b).
+	const router = useRouter();
+	const chosen = parseQuarterParam(router.query.quarter);
+	const overview = api.dashboard.overview.useQuery(chosen, { keepPreviousData: true, enabled: router.isReady });
 
 	if (overview.isError) {
 		return (
@@ -241,7 +244,13 @@ export default function DashboardPage() {
 							value={quarterValue}
 							onValueChange={(value) => {
 								const [fyStartYear, quarter] = value.split("-").map(Number);
-								setChosen({ fyStartYear, quarter });
+								void router.replace(
+									{ pathname: "/dashboard", query: { quarter: quarterParam({ fyStartYear, quarter }) } },
+									undefined,
+									{
+										shallow: true,
+									},
+								);
 							}}
 							data-testid="dashboard-quarter"
 						/>
@@ -307,7 +316,7 @@ export default function DashboardPage() {
 										</TableCell>
 										{row.cells.map((cell) => (
 											<TableCell key={cell.period} className="align-top">
-												<Cell cell={cell} code={row.plant.code} />
+												<Cell cell={cell} code={row.plant.code} quarter={quarterParam(data.quarter)} />
 											</TableCell>
 										))}
 										<TableCell className="align-top text-sm" data-testid={`dashboard-plant-total-${row.plant.code}`}>

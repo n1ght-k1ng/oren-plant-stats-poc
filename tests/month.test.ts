@@ -363,11 +363,13 @@ describe("the data owner's list of months", () => {
 		expect(entry?.months.find((month) => month.period === "2026-08")).toEqual({
 			period: "2026-08",
 			status: "DRAFT",
+			reopened: false,
 			reportId,
 		});
 		expect(entry?.months.find((month) => month.period === "2026-07")).toEqual({
 			period: "2026-07",
 			status: null,
+			reopened: false,
 			reportId: null,
 		});
 		expect(await callerFor(reviewer).month.mine()).toEqual([]);

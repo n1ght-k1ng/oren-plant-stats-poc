@@ -64,3 +64,36 @@ export const approvalLine = z.discriminatedUnion("state", [
 export type ApprovalLine = z.infer<typeof approvalLine>;
 
 export const approvalLines = z.array(approvalLine);
+
+/** What a plausibility check can flag (P5, P7). */
+export const FLAG_CODES = [
+	"KILN_ENERGY",
+	"GRID_PER_CLINKER",
+	"DIESEL_PER_CLINKER",
+	"CLINKER_VS_CAPACITY",
+	"CAPACITY_UNKNOWN",
+	"CLINKER_MISSING_WITH_FUEL",
+	"UNEXPECTED_AT_GRINDING_UNIT",
+	"EXPECTED_ITEM_NA",
+	"LARGE_CHANGE",
+] as const;
+
+/**
+ * One plausibility flag. Frozen on each SUBMIT event (U2), so the reviewer sees exactly what the data owner saw.
+ * A "warning" needs a comment to approve (U6); an "info" only explains why a check could not run.
+ */
+export const checkFlag = z.object({
+	code: z.enum(FLAG_CODES),
+	severity: z.enum(["warning", "info"]),
+	itemKeys: z.array(itemKey),
+	message: z.string().min(1),
+	/** The measured figure and the range, rounded for display, as decimal strings. */
+	measured: decimalString.optional(),
+	low: decimalString.optional(),
+	high: decimalString.optional(),
+	/** For example "GJ/t", "kWh/t", "L/t" or "%". */
+	unit: z.string().optional(),
+});
+export type CheckFlag = z.infer<typeof checkFlag>;
+
+export const checkFlags = z.array(checkFlag);

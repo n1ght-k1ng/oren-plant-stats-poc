@@ -2,7 +2,7 @@ import { Prisma, type PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 import type { Role } from "@/lib/roles";
-import { type SubmittedLine, submittedLines } from "@/lib/schemas/report";
+import { type CheckFlag, type SubmittedLine, checkFlags, submittedLines } from "@/lib/schemas/report";
 import type { SessionUser } from "@/lib/schemas/session";
 import { REVIEW_ACTION, type WorkflowAction, transition } from "@/lib/workflow";
 import { companyScope } from "@/server/helpers/scope";
@@ -52,7 +52,7 @@ export type TransitionRequest = {
 	comment?: string | null;
 	hasFlags: boolean;
 	/** On submit: every line as submitted, and the flags at that moment (F1, U2). */
-	frozen?: { lines: SubmittedLine[]; flags: unknown[] };
+	frozen?: { lines: SubmittedLine[]; flags: CheckFlag[] };
 };
 
 /**
@@ -86,7 +86,7 @@ export async function recordTransition(tx: Prisma.TransactionClient, user: Sessi
 	}
 	const frozen = request.frozen && {
 		lines: submittedLines.parse(request.frozen.lines),
-		flags: request.frozen.flags as Prisma.InputJsonValue,
+		flags: checkFlags.parse(request.frozen.flags),
 	};
 
 	// Only succeeds if nobody changed the month since it was read; the row lock makes a second caller wait,

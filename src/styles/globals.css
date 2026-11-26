@@ -32,11 +32,12 @@
 
 	/* Text */
 	--color-text-primary: #1a202c;
-	--color-text-secondary: #718096;
-	--color-text-placeholder: #a0aec0;
+	/* Darkened to pass WCAG AA (4.5:1) on white and on grey rows: docs/UX-REVIEW.md A1. */
+	--color-text-secondary: #4a5568;
+	--color-text-placeholder: #718096;
 	--color-text-disabled: #718096;
 	--color-text-on-brand: #ffffff;
-	--color-text-link: #4682b4;
+	--color-text-link: #2b6cb0;
 	--color-text-link-hover: #1e2b56;
 
 	/* Borders */
@@ -62,7 +63,7 @@
 	--color-feedback-success-text: #1a6336;
 	--color-feedback-warning-bg: #fefcbf;
 	--color-feedback-warning-fg: #f6ad55;
-	--color-feedback-warning-text: #c6883d;
+	--color-feedback-warning-text: #975a16;
 	--color-feedback-info-bg: #bee3f8;
 	--color-feedback-info-fg: #4682b4;
 	--color-feedback-info-text: #1e2b56;

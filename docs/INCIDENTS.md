@@ -37,3 +37,23 @@
   - A piped "yes" to `--all` is refused.
   - A remote database is refused.
 - **`CLAUDE.md` rule.** Show the user the list, wait for their yes, then delete by ID. Claude never uses `--all`.
+
+## 2026-11-26: a commit that passed "all checks" had a lint error
+
+**Where:** commit `0d6ea52` (step 4.1, import parsing). Nothing was deployed. Fixed in `48fc53a` a few minutes later.
+
+### What happened
+- Claude ran the tests, then lint and the commit in a single command. Lint's output was cut to its last line with `tail -1`.
+- Biome prints its summary, then a blank line, then the error marker. `tail -1` showed only the blank line, so the lint failure looked like nothing at all.
+- The commit went in with one lint error: a helper named `escape`, which shadows a global.
+- It was caught a step later, when lint was run on its own before the next change and printed `Found 1 error`.
+
+### Why it looked green
+- **An empty line was read as a pass.** The check didn't say "no errors"; it said nothing, and nothing was taken as success.
+- **Commands were chained.** Tests, lint and `git commit` ran in one go, so a failing check couldn't stop the commit, and its result had to be read from a cropped transcript.
+- **The tests were green.** That made a quiet lint result easy to accept without looking.
+
+### What we changed
+- **Each check runs as its own command,** and its result is read before the next: tests, then `npm run typecheck`, then `npx biome check .`, then the commit.
+- **A pass must say it passed.** Typecheck is reported as a count of `error TS` lines ("typecheck errors: 0"), and lint must show "No fixes applied" or "Checked N files" with no "Found" line. Blank or cropped output counts as not checked.
+- **The slip stays in the history.** The fix is its own commit, not an amend, and its message says what happened.

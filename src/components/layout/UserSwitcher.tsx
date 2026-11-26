@@ -2,6 +2,7 @@ import { Check, ChevronDown, LogOut } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 import toast from "react-hot-toast";
 
+import { homeFor } from "@/lib/home";
 import { roleLabels } from "@/lib/roles";
 import type { SessionUser } from "@/lib/schemas/session";
 import { describeUser, groupByCompany } from "@/lib/users";
@@ -17,7 +18,7 @@ const itemClass = cn(
 export function UserSwitcher({ user }: { user: SessionUser }) {
 	const users = api.session.users.useQuery();
 	const switchUser = api.session.switchUser.useMutation({
-		onSuccess: () => window.location.assign("/plants"),
+		onSuccess: (switched) => window.location.assign(homeFor(switched)),
 		onError: () => toast.error("We could not switch user. Please try again."),
 	});
 	const signOut = api.session.signOut.useMutation({

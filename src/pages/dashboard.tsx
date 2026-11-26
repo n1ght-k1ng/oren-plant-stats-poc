@@ -57,11 +57,11 @@ function Cell({ cell, code }: { cell: DashboardCell; code: string }) {
 				data-testid={testId}
 			>
 				<span className="text-text-primary group-hover:underline">
-					<span className="text-xs text-text-secondary">S1 </span>
+					<span className="text-xs text-text-secondary">Scope 1 </span>
 					<Tonnes kg={cell.approved.scope1KgCo2} />
 				</span>
 				<span className="text-text-primary group-hover:underline">
-					<span className="text-xs text-text-secondary">S2 </span>
+					<span className="text-xs text-text-secondary">Scope 2 </span>
 					<Tonnes kg={cell.approved.scope2KgCo2} />
 				</span>
 			</Link>
@@ -277,6 +277,9 @@ export default function DashboardPage() {
 								testId="dashboard-total"
 							/>
 						</div>
+						<p className="text-sm text-text-secondary" data-testid="dashboard-scope-definitions">
+							Scope 1: fuel burned and clinker made at the plants. Scope 2: grid electricity bought.
+						</p>
 						<Missing data={data} />
 					</CardContent>
 				</Card>
@@ -311,11 +314,11 @@ export default function DashboardPage() {
 											{row.approved ? (
 												<span className="flex flex-col">
 													<span>
-														<span className="text-xs text-text-secondary">S1 </span>
+														<span className="text-xs text-text-secondary">Scope 1 </span>
 														<Tonnes kg={row.approved.scope1KgCo2} />
 													</span>
 													<span>
-														<span className="text-xs text-text-secondary">S2 </span>
+														<span className="text-xs text-text-secondary">Scope 2 </span>
 														<Tonnes kg={row.approved.scope2KgCo2} />
 													</span>
 													{row.approvedMonths < row.dueMonths && (

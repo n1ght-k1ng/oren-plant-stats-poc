@@ -292,3 +292,15 @@ test.describe("U14: the import says what's left and takes you to it", () => {
 		await expect(page.getByTestId("line-coal-value")).toHaveValue("11,000");
 	});
 });
+
+test.describe("U38a: the dashboard spells out Scope 1 and Scope 2", () => {
+	test("no S1 or S2 abbreviations, and a one-line definition under the totals", async ({ page }) => {
+		await signIn(page, run.head.email);
+		await page.waitForURL("**/dashboard");
+		await expect(page.getByTestId("dashboard-scope-definitions")).toHaveText(
+			"Scope 1: fuel burned and clinker made at the plants. Scope 2: grid electricity bought.",
+		);
+		const body = await page.locator("main").innerText();
+		expect(body).not.toMatch(/\bS[12]\b/);
+	});
+});

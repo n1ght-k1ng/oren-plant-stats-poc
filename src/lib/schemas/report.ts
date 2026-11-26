@@ -27,6 +27,9 @@ export const submittedLine = z
 		note: z.string().nullable(),
 		source: z.enum(["FORM", "IMPORT"]),
 		uploadId: z.string().nullable(),
+		/** Who last set this line before the submission, and when (3.8). Null when the app set it (fixed N/A). */
+		enteredBy: z.object({ id: z.string(), name: z.string() }).nullable().optional(),
+		enteredAt: z.string().datetime().nullable().optional(),
 	})
 	.and(lineValue);
 export type SubmittedLine = z.infer<typeof submittedLine>;

@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { monthAudit } from "@/lib/schemas/audit";
 import {
 	monthByIdInput,
 	monthDetail,
@@ -10,6 +11,7 @@ import {
 	versionResult,
 } from "@/lib/schemas/month";
 import { protectedProcedure, router } from "@/server/api/trpc";
+import { getAudit } from "@/server/services/audit";
 import { getMonth, listMyMonths, openMonth, saveLines, submitMonth } from "@/server/services/month";
 
 /** Flow 1: a plant's month, from opening to submission. Rules live in the service; this only wires them up. */
@@ -25,6 +27,12 @@ export const monthRouter = router({
 		.input(monthByIdInput)
 		.output(monthDetail)
 		.query(({ ctx, input }) => getMonth(ctx.db, ctx.user, input.reportId)),
+
+	/** The audit trail: approved figures traced back to what was typed, and every step in order (3.8). */
+	audit: protectedProcedure
+		.input(monthByIdInput)
+		.output(monthAudit)
+		.query(({ ctx, input }) => getAudit(ctx.db, ctx.user, input.reportId)),
 
 	save: protectedProcedure
 		.input(saveLinesInput)

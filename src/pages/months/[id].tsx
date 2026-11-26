@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, MessageSquareWarning, RefreshCw, SearchX } from "lucide-react";
+import { AlertTriangle, ArrowLeft, FileSearch, MessageSquareWarning, RefreshCw, SearchX } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -144,7 +144,17 @@ export default function MonthPage() {
 								: "This month can't be changed now."}
 						</PageHeaderDescription>
 					</div>
-					<StatusBadge status={data.status} />
+					<div className="flex items-center gap-3">
+						<StatusBadge status={data.status} />
+						<Link
+							href={`/months/${data.id}/audit`}
+							className="inline-flex items-center gap-1.5 text-sm text-text-link hover:text-text-link-hover"
+							data-testid="month-audit-link"
+						>
+							<FileSearch className="size-4" aria-hidden />
+							Audit trail
+						</Link>
+					</div>
 				</PageHeaderRow>
 			</PageHeader>
 

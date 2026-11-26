@@ -83,7 +83,8 @@ function toCheckLines(lines: StoredLine[]): CheckLines {
 	return result;
 }
 
-function toSubmittedLine(line: StoredLine): SubmittedLine {
+function toSubmittedLine(line: StoredLine, people: Map<string, string>): SubmittedLine {
+	const enteredBy = line.updatedById ? { id: line.updatedById, name: people.get(line.updatedById) ?? "Unknown" } : null;
 	const shared = {
 		itemKey: line.itemKey,
 		enteredValue: line.enteredValue,
@@ -91,6 +92,8 @@ function toSubmittedLine(line: StoredLine): SubmittedLine {
 		note: line.note,
 		source: line.source,
 		uploadId: line.uploadId,
+		enteredBy,
+		enteredAt: enteredBy ? line.updatedAt.toISOString() : null,
 	};
 	if (line.state === "VALUE" && line.value && line.unit) {
 		return { ...shared, state: "VALUE", value: toDecimalString(line.value), unit: line.unit };
@@ -523,9 +526,23 @@ export async function submitMonth(
 				return [];
 			}
 			return toConfirm.includes(line)
-				? [{ ...line, state: "NA" as const, naReason: "NOT_USED_THIS_MONTH" as const }]
+				? [
+						{
+							...line,
+							state: "NA" as const,
+							naReason: "NOT_USED_THIS_MONTH" as const,
+							updatedById: user.id,
+							updatedAt: new Date(),
+						},
+					]
 				: [line];
 		});
+		const editorIds = [...new Set(lines.flatMap((line) => (line.updatedById ? [line.updatedById] : [])))];
+		const editors = await tx.user.findMany({
+			where: companyScope(user, { id: { in: editorIds } }),
+			select: { id: true, name: true },
+		});
+		const people = new Map(editors.map((editor) => [editor.id, editor.name]));
 		const { flags } = await liveFlags(tx, user, report, lines);
 
 		const result = await recordTransition(tx, user, {
@@ -534,7 +551,7 @@ export async function submitMonth(
 			action: "submit",
 			actorRole: actingRole ?? "DATA_OWNER",
 			hasFlags: hasWarnings(flags),
-			frozen: { lines: lines.map(toSubmittedLine), flags },
+			frozen: { lines: lines.map((line) => toSubmittedLine(line, people)), flags },
 		});
 		return { status: result.status, version: result.version };
 	});

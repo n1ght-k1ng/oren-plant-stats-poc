@@ -42,3 +42,8 @@ export function createTestPlant(
 export function callerFor(user: { id: string }) {
 	return appRouter.createCaller(createInnerContext({ userId: user.id }));
 }
+
+/** Makes the user one of the plant's data owners (Plant.dataOwners). */
+export function addDataOwner(plantId: string, userId: string) {
+	return prisma.plant.update({ where: { id: plantId }, data: { dataOwners: { connect: { id: userId } } } });
+}

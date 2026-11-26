@@ -276,6 +276,17 @@ Entries keep their numbers so that commits, tests and the write-up can refer to 
 - **Factors:** today's factors (`src/lib/factors.ts`) are JS numbers with at most 2 decimal places. Turning them into `D` from their written form is exact. Step 2.5 does that, and a test checks it.
 - Tested in `tests/decimal.test.ts`, including a database round trip and an exact CO2 sum.
 
+**N2. How CO2 is added up and shown.** **DECIDED**
+- Each line's kg CO2 is its canonical value times the factor. Diesel and clinker calcination are Scope 1; grid power alone is Scope 2.
+- N/A and "not used this month" lines count nothing. They are listed, never added as 0.
+- Totals are added in kg, exactly and unrounded. Tonnes are shown to 1 decimal place, rounded half up, using en-IN grouping like the rest of the app (`2,59,993.2`).
+- Because each plant figure and the company total are each rounded from kg, the shown plant figures can add up to 0.1 t more or less than the shown total. The dashboard says so in a footnote: "Totals are calculated before rounding."
+- Tested with P01 and P04 October 2026, using the figures worked out by hand before the code (`tests/co2.test.ts`).
+
+**N3. Flag messages state facts, never causes.** **DECIDED**
+- A flag says what is unusual: the figure and the expected range, for example "Grid electricity is 15.75 kWh per tonne of clinker, outside the expected 60 to 130."
+- No guessed explanation, such as P01 having its own power plant, appears anywhere in the app.
+
 **F1. Each submission's lines are frozen.** **DECIDED**
 - Every SUBMIT event stores every line exactly as submitted: state, canonical value and unit, the value and unit as typed, the N/A reason, the note, and the source and upload.
 - Flags are frozen the same way (U2).

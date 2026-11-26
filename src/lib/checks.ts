@@ -2,6 +2,8 @@
  * Plausibility checks (docs/DECISIONS.md D7, P5, P7, U2, U6, C1). Pure: the caller supplies the month's lines,
  * the capacity in effect that month, and the last approved month. Flags only warn; they never block.
  *
+ * Flag messages describe only what is unusual (the figure and the expected range). They never suggest a cause.
+ *
  * A check whose inputs are not all entered yet is skipped rather than worked out from a blank, so flags can
  * update live while the data owner types (U2).
  */
@@ -202,7 +204,7 @@ function grindingUnitChecks(input: CheckInput): CheckFlag[] {
 						code: "UNEXPECTED_AT_GRINDING_UNIT",
 						severity: "warning",
 						itemKeys: [key],
-						message: `${itemByKey(key).label} is not usually burned at a grinding unit. Check it belongs to this plant.`,
+						message: `${itemByKey(key).label} is reported at a grinding unit, where it is not expected.`,
 					},
 				]
 			: [],

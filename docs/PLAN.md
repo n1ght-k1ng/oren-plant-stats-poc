@@ -168,7 +168,7 @@ Server tests call the API with `callerFor(user)` (from `tests/helpers.ts`). Each
 | Step | | Size |
 |---|---|---|
 | 5.1 **Server figures** (O6, O7): statuses by plant and month, and approved CO2 by plant and for the company, Scope 1 and Scope 2 apart, by financial-year quarter. Each total gives its coverage, for example "7 of 9 plants fully approved". *Tests:* a submitted month adds nothing, a reopened month drops out, another company never appears, and the coverage counts are right. | MUST | M |
-| 5.2 **Dashboard screen:** a status grid, quarter totals, and links to each month's history. *Check:* no number comes from a month that isn't approved. | MUST | M |
+| 5.2 **Dashboard screen:** a status grid, quarter totals, and links to each month's history. A footnote says "Totals are calculated before rounding." (N2). *Check:* no number comes from a month that isn't approved. | MUST | M |
 | 5.3 **CO2 broken down by month** within a quarter. | STRETCH | S |
 
 ## Phase 6: Demo data

@@ -174,7 +174,11 @@ describe("items that should not be there, or should", () => {
 	it("flags coal or petroleum coke reported at a grinding unit, but not zero", () => {
 		const lines: CheckLines = { ...P08_OCTOBER.lines, coal: value("10"), petcoke: value("0") };
 		expect(runChecks({ ...P08_OCTOBER, lines })).toMatchObject([
-			{ code: "UNEXPECTED_AT_GRINDING_UNIT", itemKeys: ["coal"] },
+			{
+				code: "UNEXPECTED_AT_GRINDING_UNIT",
+				itemKeys: ["coal"],
+				message: "Coal is reported at a grinding unit, where it is not expected.",
+			},
 		]);
 	});
 

@@ -1,8 +1,10 @@
 // Sample companies, plants and users. Safe to run again: existing rows are left as they are.
 import { PrismaClient } from "@prisma/client";
 
+import { FIRST_REPORTING_PERIOD } from "@/config/reporting";
 import { ROLES, type Role } from "@/lib/roles";
 import type { PlantTypeValue } from "@/lib/schemas/plant";
+import { recordCapacity } from "@/server/services/capacity";
 import { updatePlant } from "@/server/services/plant";
 import { getSessionUser } from "@/server/services/session";
 
@@ -143,16 +145,36 @@ const COMPANIES: SeedCompany[] = [
 	},
 ];
 
+/**
+ * P06's expansion from 2.5 to 3.0 Mt a year. The starter does not say when it took effect, so October 2026 is
+ * an assumption (docs/DECISIONS.md A8).
+ */
+const P06_EXPANSION = { code: "P06", effectiveFrom: "2026-10", cementCapacityTpa: 3_000_000 };
+
 async function seedCompany(seed: SeedCompany) {
 	const company = await prisma.company.upsert({ where: { name: seed.name }, create: { name: seed.name }, update: {} });
 
 	for (const plant of seed.plants) {
 		const { capacityMt, ...fields } = plant;
-		await prisma.plant.upsert({
+		const cementCapacityTpa = Math.round(capacityMt * 1_000_000);
+		const saved = await prisma.plant.upsert({
 			where: { companyId_code: { companyId: company.id, code: plant.code } },
-			create: { ...fields, cementCapacityTpa: Math.round(capacityMt * 1_000_000), companyId: company.id },
+			create: { ...fields, cementCapacityTpa, companyId: company.id },
 			update: {},
 		});
+		// Capacity history (C1): the seeded capacity from the first reporting month. Left alone if present.
+		const existing = await prisma.plantCapacity.findUnique({
+			where: { plantId_effectiveFrom: { plantId: saved.id, effectiveFrom: FIRST_REPORTING_PERIOD } },
+		});
+		if (!existing) {
+			await recordCapacity(prisma, {
+				companyId: company.id,
+				plantId: saved.id,
+				effectiveFrom: FIRST_REPORTING_PERIOD,
+				cementCapacityTpa,
+				createdById: null,
+			});
+		}
 	}
 
 	for (const user of seed.users) {
@@ -172,7 +194,22 @@ async function seedCompany(seed: SeedCompany) {
 
 /** One recorded change, so the plant page has some history: P06 was expanded from 2.5 to 3.0 Mt a year. */
 async function seedExpansion(companyId: string) {
-	const plant = await prisma.plant.findUniqueOrThrow({ where: { companyId_code: { companyId, code: "P06" } } });
+	const plant = await prisma.plant.findUniqueOrThrow({
+		where: { companyId_code: { companyId, code: P06_EXPANSION.code } },
+	});
+	// The history row is written even on a database seeded before capacity history existed.
+	const expansion = await prisma.plantCapacity.findUnique({
+		where: { plantId_effectiveFrom: { plantId: plant.id, effectiveFrom: P06_EXPANSION.effectiveFrom } },
+	});
+	if (!expansion) {
+		await recordCapacity(prisma, {
+			companyId,
+			plantId: plant.id,
+			effectiveFrom: P06_EXPANSION.effectiveFrom,
+			cementCapacityTpa: P06_EXPANSION.cementCapacityTpa,
+			createdById: null,
+		});
+	}
 	const hasHistory = await prisma.changeLog.count({ where: { companyId, entityType: "plant", entityId: plant.id } });
 	if (hasHistory > 0) {
 		return;
@@ -182,13 +219,18 @@ async function seedExpansion(companyId: string) {
 	if (!user) {
 		throw new Error("Seed user Meera Iyer is missing.");
 	}
-	await updatePlant(prisma, user, {
-		id: plant.id,
-		name: plant.name,
-		town: plant.town,
-		state: plant.state,
-		cementCapacityTpa: 3_000_000,
-	});
+	await updatePlant(
+		prisma,
+		user,
+		{
+			id: plant.id,
+			name: plant.name,
+			town: plant.town,
+			state: plant.state,
+			cementCapacityTpa: P06_EXPANSION.cementCapacityTpa,
+		},
+		{ capacityEffectiveFrom: P06_EXPANSION.effectiveFrom },
+	);
 }
 
 async function main() {

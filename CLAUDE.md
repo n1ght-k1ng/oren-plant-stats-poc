@@ -28,7 +28,8 @@ npx vitest run tests/plant.test.ts -t "plant.byId"  # tests matching a name
 - Every test file needs `DATABASE_URL`, even pure ones like `units.test.ts`, because `tests/setup.ts` checks for it. Tests write to and delete from that database, so do not point them at the live site's. Run `db:push` on it first.
 - Environment variables already set win over `.env` in tests. Use that to point tests at a separate test database:
   ```bash
-  export DATABASE_URL="postgresql://plant:plant@127.0.0.1:5442/plant_data_test" DIRECT_URL="$DATABASE_URL"
+  export DATABASE_URL="postgresql://plant:plant@127.0.0.1:5442/plant_data_test"
+  export DIRECT_URL="$DATABASE_URL"   # a separate line: on one line it would copy the old value
   npx prisma db push --skip-generate   # once, and after each schema change
   npm test
   ```

@@ -335,3 +335,4 @@ Entries keep their numbers so that commits, tests and the write-up can refer to 
 - **A6.** The three sample files are all we know about how plants report. Import fails safe: anything it cannot match stays unmatched.
 - **A7.** The seed data's two owners for P05 overrides the brief's "one data owner per plant" (O8).
 - **A8.** P06's expansion to 3.0 Mt takes effect from October 2026 in the seed data. The starter records when it was typed in, not when it took effect (C1).
+- **A9.** A month ends at midnight India Standard Time (UTC+5:30), not UTC. The servers run in UTC, so using UTC would keep October closed for the first 5½ hours of 1 November in India. Implemented in `src/lib/periods.ts`.

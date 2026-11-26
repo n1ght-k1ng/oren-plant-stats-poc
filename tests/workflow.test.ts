@@ -87,7 +87,12 @@ describe("comments", () => {
 			message: "This month has flags. Add a comment explaining why the flagged values are accepted.",
 		});
 		expect(
-			transition({ status: "SUBMITTED", action: "approve", comment: "P01 runs a captive power plant", hasFlags: true }),
+			transition({
+				status: "SUBMITTED",
+				action: "approve",
+				comment: "Figures match the plant's records",
+				hasFlags: true,
+			}),
 		).toEqual({ ok: true, to: "APPROVED" });
 	});
 

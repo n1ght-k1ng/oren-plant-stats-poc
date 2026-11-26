@@ -99,6 +99,8 @@ export const monthDetail = z.object({
 	flags: z.array(checkFlag),
 	/** The latest send-back or reopen comment, shown at the top of a returned month. */
 	returnComment: z.object({ text: z.string(), by: z.string(), at: z.date() }).nullable(),
+	/** For a submitted month: whether this user may approve or send it back, or why not (O4, U3). */
+	review: z.object({ canReview: z.boolean(), blockedReason: z.string().nullable() }),
 	history: z.array(
 		z.object({
 			sequence: z.number().int(),
@@ -108,6 +110,8 @@ export const monthDetail = z.object({
 			actorRole: z.string(),
 			comment: z.string().nullable(),
 			createdAt: z.date(),
+			/** On a resubmission: what changed since the previous submission (Flow 3). */
+			changes: z.array(z.object({ itemKey: z.string(), label: z.string(), from: z.string(), to: z.string() })),
 		}),
 	),
 });

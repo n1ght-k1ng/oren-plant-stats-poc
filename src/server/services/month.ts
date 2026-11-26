@@ -16,8 +16,9 @@ import { cannotOpenReason, currentPeriod, parsePeriod } from "@/lib/periods";
 import { checkPermission } from "@/lib/permissions";
 import { parseQuantity } from "@/lib/quantity";
 import type { LineInput, MonthDetail, MonthLine, MyMonths } from "@/lib/schemas/month";
-import { type CheckFlag, type SubmittedLine, checkFlags } from "@/lib/schemas/report";
+import { type CheckFlag, type SubmittedLine, checkFlags, submittedLines } from "@/lib/schemas/report";
 import type { SessionUser } from "@/lib/schemas/session";
+import { diffSubmissions } from "@/lib/submissionDiff";
 import { canEditLines } from "@/lib/workflow";
 import type { Db } from "@/server/db";
 import { recordChange } from "@/server/helpers/changeLog";
@@ -28,7 +29,7 @@ import { inMonthTransaction, monthConflict, recordTransition } from "@/server/se
 
 const notFound = () => new TRPCError({ code: "NOT_FOUND", message: "We could not find this month." });
 
-const plantSelect = {
+export const plantSelect = {
 	id: true,
 	code: true,
 	name: true,
@@ -39,11 +40,11 @@ const plantSelect = {
 
 type PlantWithOwners = Prisma.PlantGetPayload<{ select: typeof plantSelect }>;
 
-function permissionPlant(plant: PlantWithOwners) {
+export function permissionPlant(plant: PlantWithOwners) {
 	return { companyId: plant.companyId, dataOwnerIds: plant.dataOwners.map((owner) => owner.id) };
 }
 
-function plantRef(plant: PlantWithOwners) {
+export function plantRef(plant: PlantWithOwners) {
 	return { id: plant.id, code: plant.code, name: plant.name, type: plant.type };
 }
 
@@ -244,6 +245,17 @@ export async function getMonth(db: Db, user: SessionUser, reportId: string): Pro
 	requirePermission(user, plant, "viewStatus");
 	const values = checkPermission(user, plant, "viewValues", { status: report.status });
 	const canEdit = checkPermission(user, plant, "edit").allowed && canEditLines(report.status);
+	const reviewPermission = checkPermission(user, plant, "approve");
+	const review =
+		report.status !== "SUBMITTED"
+			? { canReview: false, blockedReason: null }
+			: reviewPermission.allowed
+				? { canReview: true, blockedReason: null }
+				: {
+						canReview: false,
+						// Only explain to people who review; a data owner simply waits.
+						blockedReason: reviewPermission.reason === "OWN_PLANT" ? reviewPermission.message : null,
+					};
 
 	const lines = ITEMS.flatMap((item) => report.lines.filter((line) => line.itemKey === item.key));
 	const live = await liveFlags(db, user, report, lines);
@@ -271,15 +283,28 @@ export async function getMonth(db: Db, user: SessionUser, reportId: string): Pro
 			report.status === "RETURNED" && lastReturn?.comment
 				? { text: lastReturn.comment, by: lastReturn.actor.name, at: lastReturn.createdAt }
 				: null,
-		history: report.events.map((event) => ({
-			sequence: event.sequence,
-			action: event.action,
-			toStatus: event.toStatus,
-			actorName: event.actor.name,
-			actorRole: event.actorRole,
-			comment: event.comment,
-			createdAt: event.createdAt,
-		})),
+		review,
+		history: report.events.map((event) => {
+			// A resubmission lists what changed since the submission before it.
+			const earlier = report.events.filter(
+				(candidate) => candidate.action === "SUBMIT" && candidate.sequence < event.sequence,
+			);
+			const previousSubmit = earlier.at(-1);
+			const changes =
+				event.action === "SUBMIT" && previousSubmit?.lines && event.lines
+					? diffSubmissions(submittedLines.parse(previousSubmit.lines), submittedLines.parse(event.lines))
+					: [];
+			return {
+				sequence: event.sequence,
+				action: event.action,
+				toStatus: event.toStatus,
+				actorName: event.actor.name,
+				actorRole: event.actorRole,
+				comment: event.comment,
+				createdAt: event.createdAt,
+				changes,
+			};
+		}),
 	};
 }
 
@@ -343,7 +368,7 @@ function describe(line: Pick<LineUpdate, "state" | "enteredValue" | "enteredUnit
 	return "not entered";
 }
 
-async function loadForChange(tx: Prisma.TransactionClient, user: SessionUser, reportId: string) {
+export async function loadForChange(tx: Prisma.TransactionClient, user: SessionUser, reportId: string) {
 	const report = await tx.monthlyReport.findFirst({
 		where: companyScope(user, { id: reportId }),
 		include: { plant: { select: plantSelect }, lines: true },

@@ -15,6 +15,13 @@ model Company {
   users      User[]
   plants     Plant[]
   changeLogs ChangeLog[]
+
+  plantCapacities   PlantCapacity[]
+  monthlyReports    MonthlyReport[]
+  reportLines       ReportLine[]
+  uploads           Upload[]
+  reviewEvents      ReviewEvent[]
+  approvalSnapshots ApprovalSnapshot[]
 }
 
 model User {
@@ -29,6 +36,12 @@ model User {
   plants    Plant[]     @relation("PlantDataOwners")
   changes   ChangeLog[]
   createdAt DateTime    @default(now())
+
+  capacitiesEntered PlantCapacity[] @relation("CapacityEnteredBy")
+  reportsOpened     MonthlyReport[] @relation("ReportOpenedBy")
+  linesUpdated      ReportLine[]    @relation("LineUpdatedBy")
+  uploads           Upload[]
+  reviewEvents      ReviewEvent[]
 }
 
 enum PlantType {
@@ -51,6 +64,9 @@ model Plant {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
+  capacities     PlantCapacity[]
+  monthlyReports MonthlyReport[]
+
   @@unique([companyId, code])
 }
 
@@ -69,4 +85,211 @@ model ChangeLog {
   createdAt   DateTime @default(now())
 
   @@index([companyId, entityType, entityId])
+}
+
+// ---------------------------------------------------------------------------
+// Monthly plant data (docs/DECISIONS.md P1, C1). Every table carries companyId
+// and is read through companyScope. Months are "YYYY-MM" strings (O7).
+// ---------------------------------------------------------------------------
+
+/// Cement capacity over time (C1). The capacity for a month is the row with the
+/// latest effectiveFrom on or before it. Plant.cementCapacityTpa mirrors the latest row.
+model PlantCapacity {
+  id                String   @id @default(cuid())
+  companyId         String
+  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  plantId           String
+  plant             Plant    @relation(fields: [plantId], references: [id], onDelete: Cascade)
+  /// First month this capacity applies to, "YYYY-MM".
+  effectiveFrom     String
+  /// Tonnes of cement a year, like Plant.cementCapacityTpa.
+  cementCapacityTpa Int
+  /// Null for rows written by the seed.
+  createdById       String?
+  createdBy         User?    @relation("CapacityEnteredBy", fields: [createdById], references: [id], onDelete: NoAction)
+  createdAt         DateTime @default(now())
+
+  @@unique([plantId, effectiveFrom])
+  @@index([companyId])
+}
+
+/// Status of a plant's month (O1). "Not started" is the absence of a row.
+enum ReportStatus {
+  DRAFT
+  SUBMITTED
+  RETURNED
+  APPROVED
+}
+
+/// One plant's data for one month (D1).
+model MonthlyReport {
+  id         String       @id @default(cuid())
+  companyId  String
+  company    Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  plantId    String
+  plant      Plant        @relation(fields: [plantId], references: [id], onDelete: Cascade)
+  /// "YYYY-MM"
+  period     String
+  status     ReportStatus @default(DRAFT)
+  /// Plant type when the month was opened; decides the expected items (U9).
+  plantType  PlantType
+  /// Goes up by one on every save. A save sent with an older version is rejected (P1).
+  version    Int          @default(1)
+  openedById String
+  openedBy   User         @relation("ReportOpenedBy", fields: [openedById], references: [id], onDelete: NoAction)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  lines     ReportLine[]
+  uploads   Upload[]
+  events    ReviewEvent[]
+  approvals ApprovalSnapshot[]
+
+  @@unique([plantId, period])
+  @@index([companyId, status])
+  @@index([companyId, period])
+}
+
+/// A line is a value, N/A, or not entered (D4). Not entered is never 0.
+enum LineState {
+  VALUE
+  NA
+  NOT_ENTERED
+}
+
+/// Why a line is N/A.
+enum NaReason {
+  /// Marked N/A by the data owner, or fixed N/A for the plant type (P4).
+  NOT_APPLICABLE
+  /// A blank optional item confirmed at submission (P4).
+  NOT_USED_THIS_MONTH
+}
+
+enum LineSource {
+  FORM
+  IMPORT
+}
+
+/// One item in a month. Created for every catalogue item when the month is opened.
+model ReportLine {
+  id           String        @id @default(cuid())
+  companyId    String
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  reportId     String
+  report       MonthlyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  /// Key from the item catalogue, for example "diesel".
+  itemKey      String
+  state        LineState     @default(NOT_ENTERED)
+  /// In the item's canonical unit (D5). Set only when state is VALUE. Decimal, never Float (N1):
+  /// entry allows 3 decimal places, and converting to the canonical unit divides by up to 1,000, so 6 places.
+  value        Decimal?      @db.Decimal(24, 6)
+  /// The canonical unit, for example "L". Set only when state is VALUE.
+  unit         String?
+  /// Exactly as typed or imported, for example "1,23,00,000" and "kWh" (P1).
+  enteredValue String?
+  enteredUnit  String?
+  /// Set only when state is NA.
+  naReason     NaReason?
+  note         String?
+  source       LineSource    @default(FORM)
+  /// The upload this value came from, when source is IMPORT.
+  uploadId     String?
+  upload       Upload?       @relation(fields: [uploadId], references: [id], onDelete: SetNull)
+  updatedById  String?
+  updatedBy    User?         @relation("LineUpdatedBy", fields: [updatedById], references: [id], onDelete: NoAction)
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([reportId, itemKey])
+  @@index([companyId])
+}
+
+enum UploadKind {
+  FILE
+  PASTE
+}
+
+/// An import, stored exactly as received (D16), up to 1 MB (O11, enforced in the service).
+model Upload {
+  id           String        @id @default(cuid())
+  companyId    String
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  reportId     String
+  report       MonthlyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  kind         UploadKind
+  /// Original file name; null for a paste.
+  filename     String?
+  content      String
+  sizeBytes    Int
+  /// How each row was matched to an item, or why it was not.
+  mapping      Json
+  uploadedById String
+  uploadedBy   User          @relation(fields: [uploadedById], references: [id], onDelete: NoAction)
+  createdAt    DateTime      @default(now())
+
+  lines ReportLine[]
+
+  @@index([companyId])
+  @@index([reportId])
+}
+
+enum ReviewAction {
+  SUBMIT
+  APPROVE
+  SEND_BACK
+  REOPEN
+}
+
+/// Every status change, in order (D15, O1).
+model ReviewEvent {
+  id         String        @id @default(cuid())
+  companyId  String
+  company    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  reportId   String
+  report     MonthlyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  /// 1, 2, 3... per month, in order. Unique, so the history has a fixed order, and two people acting on the
+  /// same month at once cannot both succeed.
+  sequence   Int
+  action     ReviewAction
+  fromStatus ReportStatus
+  toStatus   ReportStatus
+  actorId    String
+  actor      User          @relation(fields: [actorId], references: [id], onDelete: NoAction)
+  /// The role the person acted in, from ROLES in src/lib/roles.ts (O5).
+  actorRole  String
+  /// Required for SEND_BACK and REOPEN, and for APPROVE when the month has flags (O12, U6).
+  comment    String?
+  /// On SUBMIT: the flags frozen at submission, as the reviewer will see them (U2).
+  /// Any number inside is a decimal string, never a JSON number (N1).
+  flags      Json?
+  /// On SUBMIT: every line exactly as submitted (F1), so the history shows what each reviewer saw and
+  /// what changed between submissions. Shape: submittedLines in src/lib/schemas/report.ts.
+  lines      Json?
+  createdAt  DateTime      @default(now())
+
+  approval ApprovalSnapshot?
+
+  @@unique([reportId, sequence])
+  @@index([companyId])
+}
+
+/// What an approval counted (O3). Kept when a month is reopened, so earlier versions stay readable (O2).
+model ApprovalSnapshot {
+  id          String        @id @default(cuid())
+  companyId   String
+  company     Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  reportId    String
+  report      MonthlyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  /// The APPROVE event that made this snapshot.
+  eventId     String        @unique
+  event       ReviewEvent   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  /// kg CO2, exact (N1): a value with 6 decimal places times a factor with up to 2 gives 8.
+  scope1KgCo2 Decimal       @db.Decimal(30, 8)
+  scope2KgCo2 Decimal       @db.Decimal(30, 8)
+  /// Per line: item, canonical value and unit, factor used (value, source, year) and kg CO2 (F2).
+  /// Shape: approvalLines in src/lib/schemas/report.ts. Numbers are decimal strings, never JSON numbers (N1).
+  lines       Json
+  createdAt   DateTime      @default(now())
+
+  @@index([reportId, createdAt])
+  @@index([companyId])
 }

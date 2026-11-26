@@ -267,6 +267,37 @@ Entries keep their numbers so that commits, tests and the write-up can refer to 
 - *Rejected alternative:* take the effective date from the `ChangeLog` timestamp. That is when someone typed the change, so any late or backdated edit would be wrong.
 - *Rejected alternative:* add an `effectiveFrom` column to `Plant`. That keeps only one change, so a second expansion would lose the first.
 
+**N1. Quantities and CO2 are exact decimals.** **DECIDED** (a correction)
+- **Correction:** the first schema stored quantities and CO2 as `Float`, claiming they were exact at our scale. That was wrong. Binary floating point cannot hold values such as 0.1, and sums across lines drift: in JS, 0.1 + 0.2 is 0.30000000000000004, and a sample month's Scope 1 total came out as 85,252,851.82000001 instead of 85,252,851.82. Board and audit figures cannot carry that.
+- **Storage:** every quantity and CO2 column is Prisma `Decimal`. Line values use `Decimal(24, 6)`: entry allows 3 decimal places, and conversion to the canonical unit divides by up to 1,000. CO2 in kg uses `Decimal(30, 8)`: 6 decimal places times a factor with up to 2. Capacity stays a whole number of tonnes (`Int`).
+- **Arithmetic:** all of it uses `D` from `src/lib/decimal.ts`, a copy of Prisma's Decimal set to 50 significant digits. The default, 20, rounds even an addition once a total passes about 12 digits before the point. Values are never converted to JS `number` along the way.
+- **The API boundary:** quantities cross tRPC as plain decimal strings (`decimalString` in output schemas, `toDecimalString` in services). That was less code than a superjson serializer, which would need registering on both client and server, and the browser receives strings it can show directly.
+- **JSON columns** (frozen flags, approval lines) hold numbers as decimal strings too, never JSON numbers.
+- **Factors:** today's factors (`src/lib/factors.ts`) are JS numbers with at most 2 decimal places. Turning them into `D` from their written form is exact. Step 2.5 does that, and a test checks it.
+- Tested in `tests/decimal.test.ts`, including a database round trip and an exact CO2 sum.
+
+**F1. Each submission's lines are frozen.** **DECIDED**
+- Every SUBMIT event stores every line exactly as submitted: state, canonical value and unit, the value and unit as typed, the N/A reason, the note, and the source and upload.
+- Flags are frozen the same way (U2).
+- The month history can then show exactly what each reviewer saw and what changed between submissions. Later edits never change an earlier submission.
+- The shape is `submittedLines` in `src/lib/schemas/report.ts`.
+
+**F2. What each approval line records.** **DECIDED**
+- Every approval line stores the item, the canonical value and unit, the factor applied (its key, kg CO2 per unit, source, **year**, and scope), and the resulting kg CO2.
+- N/A lines are kept so the approval lists every item, but count nothing.
+- The shape is `approvalLines` in `src/lib/schemas/report.ts`. A test checks that the lines add up exactly to the stored Scope 1 and Scope 2 totals.
+
+**F3. Factor years.** **PROPOSED**
+- `src/lib/factors.ts` has no year field, so step 2.5 adds one to each factor, taken from its source:
+  - IPCC fuel factors: `2006`.
+  - CEA grid factor: `FY 2025-26` (version 22.0, August 2026).
+  - **GCCA clinker factor: unknown.** Its source names the protocol but no version or year. Needs a decision: find the version, or record "GCCA protocol, version not stated".
+
+**F4. History order.** **DECIDED**
+- Each review event has a `sequence` number (1, 2, 3, ...) within its month, unique per month.
+- The history is ordered by it, not by timestamp, which can tie within a millisecond.
+- It also means two people acting on the same month at the same moment cannot both succeed: the second is rejected and must reload.
+
 **E1. End-to-end tests.** Playwright runs Flows 1 to 4 through the user switcher, both locally and against the deployed URL. **DECIDED**
 
 **H1. The month history screen is core v1**, not optional. It shows every value as entered and converted, every change, every status change with its comment and role, flagged-approval explanations, and the factors used. **DECIDED**

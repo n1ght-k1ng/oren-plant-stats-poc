@@ -60,6 +60,8 @@ Writes record who changed what: read the row, `diffFields`, update, and `recordC
 
 ### Units and factors
 
+- Quantities and CO2 are `Decimal`, never `number` (DECISIONS N1). Do arithmetic with `D` from `src/lib/decimal.ts`, not Prisma's 20-digit default. Send values across tRPC as decimal strings (`decimalString`, `toDecimalString`), and store numbers inside JSON columns as decimal strings.
+
 - `src/lib/units.ts` is the unit catalogue. Use `convert`, which throws across dimensions (tonnes to litres), and do not hardcode multipliers.
 - Capacity is stored as integer tonnes a year (`cementCapacityTpa`) but entered and shown in million tonnes (`cementCapacityMt`), which is why the form schema and API schema differ.
 - Emission factors are constants in `src/lib/factors.ts`, not database rows. Each applies only to its own `unit`, so convert the quantity first.

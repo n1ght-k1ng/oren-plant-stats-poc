@@ -382,10 +382,10 @@ test.describe("U38b: the dashboard keeps its quarter, and the audit trail return
 
 		await signIn(page, run.head.email);
 		await page.waitForURL("**/dashboard");
-		// The default quarter depends on which months exist, so choose Q2 and then Q1: the second is always a change.
-		await page.getByTestId("dashboard-quarter").click();
-		await page.getByRole("option", { name: "Q2 FY 2026-27" }).click();
-		await expect(page).toHaveURL(/\/dashboard\?quarter=2026-Q2$/);
+		// The default quarter depends on which months other tests have made, so start from Q2 by address: then
+		// choosing Q1 is always a change.
+		await page.goto("/dashboard?quarter=2026-Q2");
+		await expect(page.getByTestId("dashboard-quarter")).toContainText("Q2 FY 2026-27");
 		await page.getByTestId("dashboard-quarter").click();
 		await page.getByRole("option", { name: "Q1 FY 2026-27" }).click();
 		// A shallow address change fires no load event, so poll the address rather than wait for a navigation.

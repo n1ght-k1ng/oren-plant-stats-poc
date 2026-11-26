@@ -17,7 +17,9 @@ const P04_FILE = join(__dirname, "..", "samples", "P04_Nalgonda_2026-10.csv");
 async function signIn(page: Page, email: string) {
 	await page.goto("/sign-in");
 	await page.getByTestId(`sign-in-${email}`).click();
-	await page.waitForURL("**/plants");
+	// Each role lands on its own page (U1), so wait to leave sign-in rather than for one address.
+	await page.waitForURL((url) => !url.pathname.startsWith("/sign-in"));
+	await page.waitForLoadState("networkidle");
 }
 
 async function openMonth(page: Page, plant: string) {
@@ -99,7 +101,9 @@ test("the Head sees it on the dashboard and traces Scope 1 back to the typed val
 	await expect(page.getByTestId(`dashboard-cell-${run.plants.import}-${PERIOD}`)).toHaveText("Not started");
 
 	await page.getByTestId(`dashboard-cell-${run.plants.loop}-${PERIOD}`).click();
-	await page.waitForURL("**/audit");
+	// The audit trail carries the dashboard quarter, so its back link returns there (U38b).
+	await page.waitForURL(/\/audit\?from=dashboard&quarter=2026-Q3$/);
+	await expect(page.getByTestId("audit-back")).toHaveText("Back to the dashboard");
 	await expect(page.getByTestId("audit-scope1")).toHaveText("2,59,993.2 t CO2");
 	await expect(page.getByTestId("audit-approved-by")).toContainText(`Approved by ${run.reviewer.name} (Reviewer)`);
 	await expect(page.getByTestId("audit-typed-diesel")).toHaveText("160 kL");

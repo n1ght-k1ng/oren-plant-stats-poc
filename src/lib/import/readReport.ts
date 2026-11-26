@@ -124,7 +124,7 @@ export function mentionedPeriods(text: string): string[] {
 	return [...found].sort();
 }
 
-function escape(text: string): string {
+function escapeRegExp(text: string): string {
 	return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
@@ -132,8 +132,8 @@ function escape(text: string): string {
 export function mentionedPlants<P extends { code: string; town: string }>(text: string, plants: P[]): P[] {
 	return plants.filter(
 		(plant) =>
-			new RegExp(`(?<![A-Za-z0-9])${escape(plant.code)}(?![0-9])`, "i").test(text) ||
-			new RegExp(`(?<![A-Za-z])${escape(plant.town)}(?![A-Za-z])`, "i").test(text),
+			new RegExp(`(?<![A-Za-z0-9])${escapeRegExp(plant.code)}(?![0-9])`, "i").test(text) ||
+			new RegExp(`(?<![A-Za-z])${escapeRegExp(plant.town)}(?![A-Za-z])`, "i").test(text),
 	);
 }
 

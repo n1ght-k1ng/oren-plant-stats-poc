@@ -1,0 +1,30 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"vcs": { "enabled": false },
+	"files": {
+		"ignore": ["node_modules", ".next", "out", "next-env.d.ts", "src/styles/**", "samples/**"]
+	},
+	"organizeImports": { "enabled": true },
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"lineWidth": 120,
+		"lineEnding": "lf"
+	},
+	"javascript": {
+		"formatter": { "quoteStyle": "double", "semicolons": "always" }
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"style": { "noDefaultExport": "error" }
+		}
+	},
+	"overrides": [
+		{
+			"include": ["src/pages/**", "*.config.js", "*.config.mjs", "*.config.ts"],
+			"linter": { "rules": { "style": { "noDefaultExport": "off" } } }
+		}
+	]
+}

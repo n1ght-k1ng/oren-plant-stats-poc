@@ -1,0 +1,143 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/*
+ * Oren colour tokens, used as Tailwind colours: `text-text-secondary`, `bg-surface-muted`,
+ * `border-border-default`. In JS, use `var(--color-text-secondary)`.
+ */
+@theme {
+	--font-sans: "Inter Variable", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+	/* Surfaces */
+	--color-surface-page: #f7fafc;
+	--color-surface-card: #ffffff;
+	--color-surface-muted: #edf2f7;
+	--color-surface-selected: #bee3f8;
+	--color-surface-disabled: #edf2f7;
+	--color-surface-brand: #1e2b56;
+	--color-surface-brand-hover: #303e6d;
+	--color-surface-hover: #f7fafc;
+	--color-surface-overlay: rgba(0, 0, 0, 0.4);
+	--color-surface-error-subtle: #fef2f2;
+	--color-surface-warning-subtle: #fffbeb;
+
+	/* Sidebar */
+	--color-surface-sidebar: #f7fafc;
+	--color-surface-sidebar-hover: #edf2f7;
+	--color-surface-sidebar-active: #e2e8f0;
+	/* brandColors.grey: the sidebar's active-item wash */
+	--color-grey: #1e2b561a;
+	/* brandColors.gray600: sidebar item text at rest */
+	--color-gray600: #4a5568;
+
+	/* Text */
+	--color-text-primary: #1a202c;
+	--color-text-secondary: #718096;
+	--color-text-placeholder: #a0aec0;
+	--color-text-disabled: #718096;
+	--color-text-on-brand: #ffffff;
+	--color-text-link: #4682b4;
+	--color-text-link-hover: #1e2b56;
+
+	/* Borders */
+	--color-border-default: #e2e8f0;
+	--color-border-input: #e2e8f0;
+	--color-border-strong: #cbd5e0;
+	--color-border-selected: #4682b4;
+	--color-border-focus: #4682b4;
+	--color-border-error: #e53e3e;
+
+	/* Interactive */
+	--color-interactive-primary: #1e2b56;
+	--color-interactive-primary-hover: #303e6d;
+	--color-interactive-disabled: #cbd5e0;
+	--color-interactive-focus: rgba(70, 130, 180, 0.4);
+
+	/* Feedback */
+	--color-feedback-error-bg: #fed7d7;
+	--color-feedback-error-fg: #e53e3e;
+	--color-feedback-error-text: #b91c1c;
+	--color-feedback-success-bg: #c6f6d5;
+	--color-feedback-success-fg: #48bb78;
+	--color-feedback-success-text: #1a6336;
+	--color-feedback-warning-bg: #fefcbf;
+	--color-feedback-warning-fg: #f6ad55;
+	--color-feedback-warning-text: #c6883d;
+	--color-feedback-info-bg: #bee3f8;
+	--color-feedback-info-fg: #4682b4;
+	--color-feedback-info-text: #1e2b56;
+
+	/* Badges (soft) */
+	--color-badge-success-soft-bg: #ecfdf3;
+	--color-badge-success-soft-text: #047857;
+	--color-badge-warning-soft-bg: #fffbeb;
+	--color-badge-warning-soft-text: #92400e;
+	--color-badge-error-soft-bg: #fef2f2;
+	--color-badge-error-soft-text: #991b1b;
+	--color-badge-info-soft-bg: #eff6ff;
+	--color-badge-info-soft-text: #1e40af;
+	--color-badge-neutral-soft-bg: #f8fafc;
+	--color-badge-neutral-soft-text: #475569;
+
+	/* Skeleton */
+	--color-skeleton-base: #e2e8f0;
+	--color-skeleton-shimmer: #f1f5f9;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0;
+}
+
+/* In @layer base so a component that asks for link colour still gets it
+ * (unlayered CSS would beat every Tailwind utility). */
+@layer base {
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+	body {
+		@apply bg-surface-card font-sans text-text-primary;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+/* Thin scrollbar for scrolling panels */
+.oren-scrollbar-v3 {
+	scrollbar-width: thin;
+	scrollbar-color: #cbd5e0 transparent;
+}
+.oren-scrollbar-v3::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+.oren-scrollbar-v3::-webkit-scrollbar-thumb {
+	background: #cbd5e0;
+	border-radius: 9999px;
+}
+.oren-scrollbar-v3::-webkit-scrollbar-thumb:hover {
+	background: #a0aec0;
+}
+
+/* Hide number input arrows */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+input[type="number"] {
+	-moz-appearance: textfield;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}

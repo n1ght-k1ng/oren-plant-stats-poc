@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Company {
+  id         String      @id @default(cuid())
+  name       String      @unique
+  createdAt  DateTime    @default(now())
+  users      User[]
+  plants     Plant[]
+  changeLogs ChangeLog[]
+}
+
+model User {
+  id        String      @id @default(cuid())
+  name      String
+  email     String      @unique
+  /// Values from ROLES in src/lib/roles.ts. A user can hold more than one role.
+  roles     String[]
+  companyId String
+  company   Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  /// Plants whose data this user is responsible for.
+  plants    Plant[]     @relation("PlantDataOwners")
+  changes   ChangeLog[]
+  createdAt DateTime    @default(now())
+}
+
+enum PlantType {
+  INTEGRATED
+  GRINDING_UNIT
+}
+
+model Plant {
+  id                String    @id @default(cuid())
+  /// The company's own code for the plant, for example P01.
+  code              String
+  name              String
+  town              String
+  state             String
+  type              PlantType
+  cementCapacityTpa Int
+  companyId         String
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  dataOwners        User[]    @relation("PlantDataOwners")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([companyId, code])
+}
+
+/// Who changed what, and when. Written by recordChange in src/server/helpers/changeLog.ts.
+model ChangeLog {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  entityType  String
+  entityId    String
+  action      String
+  /// { field: { from, to } }
+  changes     Json
+  changedById String
+  changedBy   User     @relation(fields: [changedById], references: [id], onDelete: NoAction)
+  createdAt   DateTime @default(now())
+
+  @@index([companyId, entityType, entityId])
+}

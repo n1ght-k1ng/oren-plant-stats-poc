@@ -1,537 +1,632 @@
 [
-	{
-		"task": "sign-in",
-		"kind": "screenshot",
-		"text": "01-sign-in.jpg"
-	},
-	{
-		"task": "sign-in",
-		"kind": "keyboard",
-		"text": "Anita TiwariPlant data owner \u00b7 P [NO VISIBLE FOCUS] \u2192 Arijit GhoshPlant data owner \u00b7 P [NO VISIBLE FOCUS] \u2192 Deepak SahuPlant data owner \u00b7 P0 [NO VISIBLE FOCUS] \u2192 Hetal PatelPlant data owner \u00b7 P0 [NO VISIBLE FOCUS] \u2192 Karthik RajaPlant data owner \u00b7 P [NO VISIBLE FOCUS] \u2192 Lakshmi ReddyPlant data owner \u00b7  [NO VISIBLE FOCUS]"
-	},
-	{
-		"task": "Ravi",
-		"kind": "landing",
-		"text": "lands on /plants; sidebar: Monthly data, Plants, Emission factors"
-	},
-	{
-		"task": "Ravi",
-		"kind": "screenshot",
-		"text": "02-ravi-landing-plants.jpg"
-	},
-	{
-		"task": "Ravi",
-		"kind": "months list",
-		"text": "first rows: October 2026 Approved View | September 2026 Approved View | August 2026 Approved View"
-	},
-	{
-		"task": "Ravi",
-		"kind": "screenshot",
-		"text": "03-ravi-monthly-data.jpg"
-	},
-	{
-		"task": "Ravi: sign in and find October",
-		"kind": "effort",
-		"text": "2 clicks, 0 fields typed, 3 screens (/sign-in \u2192 /plants \u2192 /months)"
-	},
-	{
-		"task": "Ravi",
-		"kind": "approved month",
-		"text": "header: P01 Nimbus Chittorgarh Works: October 2026; status: Approved; back link: Monthly data"
-	},
-	{
-		"task": "Ravi",
-		"kind": "screenshot",
-		"text": "04-ravi-october-approved.jpg"
-	},
-	{
-		"task": "Ravi: check October's status later",
-		"kind": "effort",
-		"text": "1 clicks, 0 fields typed, 2 screens (/months \u2192 /months/[id])"
-	},
-	{
-		"task": "P09 form",
-		"kind": "screenshot",
-		"text": "05-owner-form-empty-grinding-unit.jpg"
-	},
-	{
-		"task": "P09 form",
-		"kind": "submit hint",
-		"text": "Enter a value or N/A for: Furnace oil, Diesel (HSD), Grid electricity."
-	},
-	{
-		"task": "P09 form",
-		"kind": "live flags",
-		"text": "Nothing unusual in the figures so far."
-	},
-	{
-		"task": "P09 form",
-		"kind": "screenshot",
-		"text": "06-owner-form-typed.jpg"
-	},
-	{
-		"task": "P09 form",
-		"kind": "feedback",
-		"text": "save toast after 241 ms; button now \"All Changes Saved\""
-	},
-	{
-		"task": "Data owner: start October and type it (P09, grinding unit)",
-		"kind": "effort",
-		"text": "5 clicks, 3 fields typed, 3 screens (/plants \u2192 /months \u2192 /months/[id])"
-	},
-	{
-		"task": "P09",
-		"kind": "list row",
-		"text": "October 2026 Draft Continue"
-	},
-	{
-		"task": "P09",
-		"kind": "values back",
-		"text": "diesel \"56\" kL, grid \"2,900\""
-	},
-	{
-		"task": "Data owner: leave and come back to the draft",
-		"kind": "effort",
-		"text": "2 clicks, 0 fields typed, 3 screens (/months/cmwxh92em0001azgby32qp24y \u2192 /months \u2192 /months/[id])"
-	},
-	{
-		"task": "P09",
-		"kind": "unsaved changes",
-		"text": "typed 480, left via the back link with no warning; on return furnace oil is \"470\""
-	},
-	{
-		"task": "P09 submit",
-		"kind": "dialog",
-		"text": "Submit for review A reviewer will check this month. You can't change it while it waits, unless they send it back. Confirm the items you left blank were not used this month Coal: not used this month Petroleum coke: not used this month Flags Nothing unusual was flagged. Cancel Submit Month"
-	},
-	{
-		"task": "P09 submit",
-		"kind": "screenshot",
-		"text": "07-owner-submit-dialog-grinding-unit.jpg"
-	},
-	{
-		"task": "submit dialog",
-		"kind": "keyboard",
-		"text": "submit-not-used-coal \u2192 submit-not-used-petcoke \u2192 Cancel \u2192 Close \u2192 submit-not-used-coal \u2192 submit-not-used-petcoke"
-	},
-	{
-		"task": "P09 submit",
-		"kind": "escape",
-		"text": "dialog open after Escape: true"
-	},
-	{
-		"task": "P09",
-		"kind": "after submit",
-		"text": "header text: P09 Nimbus Durgapur Grinding Unit: October 2026 / Waiting for review; page says \"This month can't be changed now.\""
-	},
-	{
-		"task": "P09",
-		"kind": "screenshot",
-		"text": "08-owner-submitted.jpg"
-	},
-	{
-		"task": "Data owner: submit (grinding unit)",
-		"kind": "effort",
-		"text": "5 clicks, 0 fields typed, 2 screens (/months/cmwxh92em0001azgby32qp24y \u2192 /months/[id])"
-	},
-	{
-		"task": "import",
-		"kind": "screenshot",
-		"text": "09-owner-import-choose.jpg"
-	},
-	{
-		"task": "import",
-		"kind": "preview",
-		"text": "Read the pasted table: header on line 1, 4 rows below it. Line In the file Reads as What happens 2 Furnace oil (HAG) 655 MT Furnace oil 655 t Note: HAG Your answer \"MT\" usually means metric tonnes. Confirm it means tonnes (t), not million tonnes. Yes, tonnes Skip 3 HSD 79 KL Diesel (HSD) 79 kL Ready 4 Power purchased 41,80,000 kWh Grid electricity 41,80,000 kWh Ready 5 Coal 0 MT Coal 0 t Your answer \"MT\" usually means metric tonnes. Confirm it means tonnes (t), not million tonnes. Yes, tonnes Skip The form already has different values. Choose for each: Diesel (HSD) Keep 74900 L Use file's 79 kL Grid electricity Keep 4075 MWh Use file's 41,80,000 kWh Answer 2 questions and 2 choices above to continue."
-	},
-	{
-		"task": "import",
-		"kind": "screenshot",
-		"text": "10-owner-import-preview-paste.jpg"
-	},
-	{
-		"task": "import",
-		"kind": "conflicts",
-		"text": "The form already has different values. Choose for each: Furnace oil Keep 614 t Use file's 655 t Diesel (HSD) Keep 74900 L Use file's 79 kL Grid electricity Keep 4075 MWh Use file's 41,80,000 kWh"
-	},
-	{
-		"task": "import",
-		"kind": "summary",
-		"text": "Will fill: Furnace oil, Diesel (HSD), Grid electricity, Coal."
-	},
-	{
-		"task": "import",
-		"kind": "after apply",
-		"text": "diesel \"79\", coal \"0\"; save button \"Save Draft\""
-	},
-	{
-		"task": "import",
-		"kind": "screenshot",
-		"text": "11-owner-form-after-import.jpg"
-	},
-	{
-		"task": "Data owner: continue a draft and import by pasting from Excel",
-		"kind": "effort",
-		"text": "11 clicks, 1 fields typed, 3 screens (/plants \u2192 /months \u2192 /months/[id])"
-	},
-	{
-		"task": "Deepak",
-		"kind": "landing",
-		"text": "lands on /plants; is there any sign of the sent-back month here? false"
-	},
-	{
-		"task": "Deepak",
-		"kind": "list row",
-		"text": "October 2026 Sent back Fix and Resubmit"
-	},
-	{
-		"task": "Deepak",
-		"kind": "comment",
-		"text": "Sent back by Vikram Joshi \"Diesel is well above September. Please check whether the mining contractor's fuel is included.\" 10 Nov 2026, 12:50"
-	},
-	{
-		"task": "Deepak",
-		"kind": "flags shown while fixing",
-		"text": "Diesel (HSD) changed by +54.87% from September 2026, the last approved month."
-	},
-	{
-		"task": "Deepak",
-		"kind": "screenshot",
-		"text": "12-owner-sent-back.jpg"
-	},
-	{
-		"task": "Data owner: deal with a sent-back month",
-		"kind": "effort",
-		"text": "4 clicks, 1 fields typed, 3 screens (/plants \u2192 /months \u2192 /months/[id])"
-	},
-	{
-		"task": "Karthik",
-		"kind": "list rows",
-		"text": "September 2026 Sent back Fix and Resubmit | October 2026 Waiting for review View"
-	},
-	{
-		"task": "Karthik",
-		"kind": "reopen banner",
-		"text": "Reopened by Meera Iyer \"Auditor's query: the September diesel bill covers two months. Please enter September's share only.\" 10 Nov 2026, 15:00"
-	},
-	{
-		"task": "Karthik",
-		"kind": "who else owns this plant?",
-		"text": "page mentions Priya: false"
-	},
-	{
-		"task": "Karthik",
-		"kind": "screenshot",
-		"text": "13-owner-reopened-fixing.jpg"
-	},
-	{
-		"task": "Two-owner plant: fix the month Meera reopened",
-		"kind": "effort",
-		"text": "4 clicks, 2 fields typed, 3 screens (/plants \u2192 /months \u2192 /months/[id])"
-	},
-	{
-		"task": "Sasmita",
-		"kind": "list row",
-		"text": "October 2026 Waiting for review View"
-	},
-	{
-		"task": "Sasmita",
-		"kind": "waiting view",
-		"text": "status \"Waiting for review\"; says how long it has waited or who reviews it: 2"
-	},
-	{
-		"task": "Sasmita",
-		"kind": "screenshot",
-		"text": "14-owner-waiting-view.jpg"
-	},
-	{
-		"task": "Grinding unit owner: check October's status",
-		"kind": "effort",
-		"text": "2 clicks, 0 fields typed, 3 screens (/plants \u2192 /months \u2192 /months/[id])"
-	},
-	{
-		"task": "Priya",
-		"kind": "landing",
-		"text": "lands on /plants; sidebar: Dashboard, Monthly data, Review, Plants, Emission factors"
-	},
-	{
-		"task": "Priya",
-		"kind": "own months",
-		"text": "P05 Sep: September 2026 Waiting for review View | P05 Oct: October 2026 Waiting for review View"
-	},
-	{
-		"task": "Priya",
-		"kind": "queue",
-		"text": "P06 Nimbus Baloda Bazar Works October 2026 Deepak Sahu 26 Nov 2026, 17:07 1 flag Review || P05 Nimbus Ariyalur Works September 2026 Karthik Raja 26 Nov 2026, 17:07 1 flag Another reviewer must review this || P04 Nimbus Nalgonda Works October 2026 Lakshmi Reddy 18 Nov 2026, 16:30 None Review || P05 Nimbus Ariyalur Works October 2026 Karthik Raja 21 Nov 2026, 16:40 None Another reviewer must review this || P08 Nimbus Paradip Grinding Unit October 2026 Sasmita Mohanty 24 Nov 2026, 17:10 None Review || P09 Nimbus Durgapur Grinding Unit October 2026 Arijit Ghosh 26 Nov 2026, 17:06 None Review"
-	},
-	{
-		"task": "Priya",
-		"kind": "screenshot",
-		"text": "15-priya-queue.jpg"
-	},
-	{
-		"task": "Priya",
-		"kind": "own plant in review",
-		"text": "blocked notice: \"You are a data owner of this plant, so another reviewer must review this month.\""
-	},
-	{
-		"task": "Priya",
-		"kind": "screenshot",
-		"text": "16-priya-own-plant-blocked.jpg"
-	},
-	{
-		"task": "Priya: see her own plant's months, then her review queue",
-		"kind": "effort",
-		"text": "3 clicks, 0 fields typed, 4 screens (/plants \u2192 /months \u2192 /review \u2192 /months/[id])"
-	},
-	{
-		"task": "P04 review",
-		"kind": "what the reviewer sees",
-		"text": "flags: \"Nothing unusual was flagged.\"; previous column: \"September 2026 (last approved)\"; grid row: \"Grid electricity 1,23,00,000 kWh = 12,300 MWh 13,487 MWh TSSPDCL; As per bill\"; source of the figures shown: imported? true"
-	},
-	{
-		"task": "P04 review",
-		"kind": "screenshot",
-		"text": "17-reviewer-clean-imported-month.jpg"
-	},
-	{
-		"task": "P04 review",
-		"kind": "feedback",
-		"text": "after approve: on /review; toast seen: true"
-	},
-	{
-		"task": "Priya: approve a clean month (P04, imported)",
-		"kind": "effort",
-		"text": "3 clicks, 0 fields typed, 3 screens (/months/cmwxh6h9a00wzaz2jnli6eeb6 \u2192 /review \u2192 /months/[id])"
-	},
-	{
-		"task": "Vikram",
-		"kind": "queue",
-		"text": "P06 Nimbus Baloda Bazar Works October 2026 Deepak Sahu 26 Nov 2026, 17:07 1 flag Review || P05 Nimbus Ariyalur Works September 2026 Karthik Raja 26 Nov 2026, 17:07 1 flag Review || P05 Nimbus Ariyalur Works October 2026 Karthik Raja 21 Nov 2026, 16:40 None Review || P08 Nimbus Paradip Grinding Unit October 2026 Sasmita Mohanty 24 Nov 2026, 17:10 None Review || P09 Nimbus Durgapur Grinding Unit October 2026 Arijit Ghosh 26 Nov 2026, 17:06 None Review"
-	},
-	{
-		"task": "Vikram",
-		"kind": "screenshot",
-		"text": "18-vikram-queue.jpg"
-	},
-	{
-		"task": "review queue",
-		"kind": "a11y",
-		"text": "pointer cursor but not keyboard-focusable: tr[review-row-P06-2026-10], td, span, tr[review-row-P05-2026-09], tr[review-row-P05-2026-10], tr[review-row-P08-2026-10]"
-	},
-	{
-		"task": "Vikram: open the queue",
-		"kind": "effort",
-		"text": "1 clicks, 0 fields typed, 2 screens (/plants \u2192 /review)"
-	},
-	{
-		"task": "P06 review",
-		"kind": "flags",
-		"text": "Diesel (HSD) changed by +54.87% from September 2026, the last approved month."
-	},
-	{
-		"task": "P06 review",
-		"kind": "diesel row (this month vs last approved)",
-		"text": "Diesel (HSD) 2,00,400 L 1,29,400 L Includes the mining contractor's diesel for October; checked with the contractor's statement."
-	},
-	{
-		"task": "P06 review",
-		"kind": "owner's explanation visible next to the value",
-		"text": "true"
-	},
-	{
-		"task": "P06 review",
-		"kind": "history",
-		"text": "Submitted by Deepak Sahu (Plant data owner) 7 Nov 2026, 15:50 \u00b7 now waiting for review Sent back by Vikram Joshi (Reviewer) \"Diesel is well above September. Please check whether the mining contractor's fuel is included.\" 10 Nov 2026, 12:50 \u00b7 now sent back Submitted by Deepak Sahu (Plant data owner) Changed diesel (HSD) note from none to Includes the mining contractor's diesel for October; checked with the contractor's statement. 26 Nov 2026, 17:07 \u00b7 now waiting for review"
-	},
-	{
-		"task": "P06 review",
-		"kind": "approve disabled before comment",
-		"text": "true"
-	},
-	{
-		"task": "P06 review",
-		"kind": "screenshot",
-		"text": "19-reviewer-flagged-month.jpg"
-	},
-	{
-		"task": "review month",
-		"kind": "keyboard",
-		"text": "Dashboard \u2192 Review \u2192 Plants \u2192 Emission factors \u2192 Toggle navigation \u2192 Vikram JoshiReviewer \u00b7 Nimbus Ce \u2192 Review \u2192 Audit trail \u2192 review-comment \u2192 (body)"
-	},
-	{
-		"task": "Vikram: review the flagged month (P06) and approve it with a comment",
-		"kind": "effort",
-		"text": "2 clicks, 1 fields typed, 2 screens (/review \u2192 /months/[id])"
-	},
-	{
-		"task": "P08 review",
-		"kind": "grinding unit view",
-		"text": "rows: September 2026 (last approved) | Coal Not used this month N/A  | N/A | Petroleum coke Not used this month N/A  | N/A | Furnace oil 500 t 496 t  | 496 t"
-	},
-	{
-		"task": "Vikram: send one back (P08)",
-		"kind": "effort",
-		"text": "2 clicks, 1 fields typed, 2 screens (/review \u2192 /months/[id])"
-	},
-	{
-		"task": "Vikram",
-		"kind": "empty queue",
-		"text": "not empty"
-	},
-	{
-		"task": "Vikram",
-		"kind": "screenshot",
-		"text": "(screenshot removed: taken mid-way through an aborted script run)"
-	},
-	{
-		"task": "Vikram: approve the rest of the queue",
-		"kind": "effort",
-		"text": "0 clicks, 0 fields typed, 1 screens (/review)"
-	},
-	{
-		"task": "Vikram",
-		"kind": "time",
-		"text": "whole queue in 4 s of machine time; 2 months handled"
-	},
-	{
-		"task": "Vikram",
-		"kind": "stale list",
-		"text": "After approving, the review queue first shows the cached list, still including the month just approved, then refetches. The script clicked a row that then vanished. On a slow connection a reviewer can open a month that is already approved. Database confirmed each month was approved once (P05 Sep, P05 Oct, P09 Oct)."
-	},
-	{
-		"task": "Vikram",
-		"kind": "empty queue",
-		"text": "Plant Month Submitted Flags Action Nothing waiting for review Months appear here as soon as a plant submits them."
-	},
-	{
-		"task": "Vikram",
-		"kind": "screenshot",
-		"text": "21-vikram-queue-empty.jpg"
-	},
-	{
-		"task": "Vikram: approve the rest of the queue",
-		"kind": "effort",
-		"text": "1 clicks, 0 fields typed, 2 screens (/plants \u2192 /review)"
-	},
-	{
-		"task": "Sasmita",
-		"kind": "landing",
-		"text": "on /plants; any sign of the sent-back month: false"
-	},
-	{
-		"task": "Sasmita",
-		"kind": "list row",
-		"text": "October 2026 Sent back Fix and Resubmit"
-	},
-	{
-		"task": "Sasmita",
-		"kind": "comment",
-		"text": "Sent back by Vikram Joshi \"Furnace oil is a little above what the HAG usually uses. Please confirm against the stores issue slip.\" 26 Nov 2026, 17:08"
-	},
-	{
-		"task": "Sasmita",
-		"kind": "values as typed",
-		"text": "furnace oil \"500\", grid \"30,60,000\" kWh"
-	},
-	{
-		"task": "Grinding unit owner: deal with the sent-back month",
-		"kind": "effort",
-		"text": "4 clicks, 1 fields typed, 3 screens (/plants \u2192 /months \u2192 /months/[id])"
-	},
-	{
-		"task": "Meera",
-		"kind": "landing",
-		"text": "on /plants"
-	},
-	{
-		"task": "Meera",
-		"kind": "readiness",
-		"text": "Not ready for the board. Q3 FY 2026-27: 7 of 9 plant-months approved. The totals below include approved months only, so they are partial. November 2026 and December 2026 have not ended yet."
-	},
-	{
-		"task": "Meera",
-		"kind": "company",
-		"text": "S1 9,72,549.6 t CO2 | S2 63,303.5 t CO2 | total 10,35,853.1 t CO2"
-	},
-	{
-		"task": "Meera",
-		"kind": "missing",
-		"text": "Waiting for review (1) P08 Oct 2026 Being entered (1) P07 Oct 2026"
-	},
-	{
-		"task": "Meera",
-		"kind": "screenshot",
-		"text": "22-meera-dashboard-q3.jpg"
-	},
-	{
-		"task": "Meera",
-		"kind": "Q2 readiness",
-		"text": "Ready for the board: all 27 plant-months of Q2 FY 2026-27 are approved. Every figure below has been approved."
-	},
-	{
-		"task": "Meera",
-		"kind": "screenshot",
-		"text": "23-meera-dashboard-q2.jpg"
-	},
-	{
-		"task": "Meera: what can go to the board?",
-		"kind": "effort",
-		"text": "3 clicks, 0 fields typed, 2 screens (/plants \u2192 /dashboard)"
-	},
-	{
-		"task": "Meera",
-		"kind": "audit",
-		"text": "Scope 1 2,56,814.8 t CO2; approved by: Approved by Vikram Joshi (Reviewer) on 6 Oct 2026, 12:00: \"Checked against the fuel and power bills; the flagged figures are correct as entered.\" Submitted by Ravi Meena on 5 Oct 2026, 15:00 Totals are calculated in kg before rounding; tonnes are rounded to one decimal place."
-	},
-	{
-		"task": "Meera",
-		"kind": "trace row",
-		"text": "Coal 33896 t 33,896 t 2,441 per t 8,27,40,136 2006 IPCC 2006 Guidelines, Vol. 2, Ch. 1, default net calorific value x default CO2 factor: other bituminous coal, 25.8 GJ/t x 94.6 kg/GJ Ravi Meena 4 Oct 2026, 10:40"
-	},
-	{
-		"task": "Meera",
-		"kind": "screenshot",
-		"text": "24-meera-audit-trail.jpg"
-	},
-	{
-		"task": "Meera",
-		"kind": "can she get back to the dashboard?",
-		"text": "back link says \"Back to the month\" (goes to the month, not the dashboard)"
-	},
-	{
-		"task": "Meera: answer an auditor's 'where did this number come from?'",
-		"kind": "effort",
-		"text": "1 clicks, 0 fields typed, 2 screens (/dashboard \u2192 /months/[id]/audit)"
-	},
-	{
-		"task": "Meera",
-		"kind": "reopen from the audit page?",
-		"text": "reopen control on the audit trail: false"
-	},
-	{
-		"task": "Meera",
-		"kind": "screenshot",
-		"text": "25-meera-reopen-panel.jpg"
-	},
-	{
-		"task": "Meera",
-		"kind": "after reopen",
-		"text": "status \"Sent back\"; return comment shown to Meera: true"
-	},
-	{
-		"task": "Meera: reopen a month (P02 October)",
-		"kind": "effort",
-		"text": "6 clicks, 1 fields typed, 4 screens (/months/cmwxh6g6c00q4az2jeor3ybsr/audit \u2192 /months/[id]/audit \u2192 /dashboard \u2192 /months/[id])"
-	},
-	{
-		"task": "Meera",
-		"kind": "dashboard after reopen",
-		"text": "Not ready for the board. Q3 FY 2026-27: 6 of 9 plant-months approved. The totals below include approved months only, so they are partial. November 2026 and December 2026 have not ended yet. | S1 7,69,220.7 t CO2 | P02 Oct cell: Sent back"
-	},
-	{
-		"task": "dashboard",
-		"kind": "keyboard",
-		"text": "Dashboard \u2192 Review \u2192 Plants \u2192 Emission factors \u2192 Toggle navigation \u2192 Meera IyerHead of Sustainability \u2192 Q3 FY 2026-27 \u2192 P08 Oct 2026 \u2192 P02 Oct 2026 \u2192 P07 Oct 2026 \u2192 S1 2,59,993.2 tS2 3,037.5 t \u2192 Sent back"
-	}
+  {
+    "task": "sign-in",
+    "kind": "screenshot",
+    "text": "01-sign-in.jpg"
+  },
+  {
+    "task": "sign-in",
+    "kind": "keyboard",
+    "text": "Anita TiwariPlant data owner · P [NO VISIBLE FOCUS] → Arijit GhoshPlant data owner · P [NO VISIBLE FOCUS] → Deepak SahuPlant data owner · P0 [NO VISIBLE FOCUS] → Hetal PatelPlant data owner · P0 [NO VISIBLE FOCUS] → Karthik RajaPlant data owner · P [NO VISIBLE FOCUS] → Lakshmi ReddyPlant data owner ·  [NO VISIBLE FOCUS]"
+  },
+  {
+    "task": "Ravi",
+    "kind": "landing",
+    "text": "lands on /plants; sidebar: Monthly data, Plants, Emission factors"
+  },
+  {
+    "task": "Ravi",
+    "kind": "screenshot",
+    "text": "02-ravi-landing-plants.jpg"
+  },
+  {
+    "task": "Ravi",
+    "kind": "months list",
+    "text": "first rows: October 2026 Approved View | September 2026 Approved View | August 2026 Approved View"
+  },
+  {
+    "task": "Ravi",
+    "kind": "screenshot",
+    "text": "03-ravi-monthly-data.jpg"
+  },
+  {
+    "task": "Ravi: sign in and find October",
+    "kind": "effort",
+    "text": "2 clicks, 0 fields typed, 3 screens (/sign-in → /plants → /months)"
+  },
+  {
+    "task": "Ravi",
+    "kind": "approved month",
+    "text": "header: P01 Nimbus Chittorgarh Works: October 2026; status: Approved; back link: Monthly data"
+  },
+  {
+    "task": "Ravi",
+    "kind": "screenshot",
+    "text": "04-ravi-october-approved.jpg"
+  },
+  {
+    "task": "Ravi: check October's status later",
+    "kind": "effort",
+    "text": "1 clicks, 0 fields typed, 2 screens (/months → /months/[id])"
+  },
+  {
+    "task": "P09 form",
+    "kind": "screenshot",
+    "text": "05-owner-form-empty-grinding-unit.jpg"
+  },
+  {
+    "task": "P09 form",
+    "kind": "submit hint",
+    "text": "Enter a value or N/A for: Furnace oil, Diesel (HSD), Grid electricity."
+  },
+  {
+    "task": "P09 form",
+    "kind": "live flags",
+    "text": "Nothing unusual in the figures so far."
+  },
+  {
+    "task": "P09 form",
+    "kind": "screenshot",
+    "text": "06-owner-form-typed.jpg"
+  },
+  {
+    "task": "P09 form",
+    "kind": "feedback",
+    "text": "save toast after 241 ms; button now \"All Changes Saved\""
+  },
+  {
+    "task": "Data owner: start October and type it (P09, grinding unit)",
+    "kind": "effort",
+    "text": "5 clicks, 3 fields typed, 3 screens (/plants → /months → /months/[id])"
+  },
+  {
+    "task": "P09",
+    "kind": "list row",
+    "text": "October 2026 Draft Continue"
+  },
+  {
+    "task": "P09",
+    "kind": "values back",
+    "text": "diesel \"56\" kL, grid \"2,900\""
+  },
+  {
+    "task": "Data owner: leave and come back to the draft",
+    "kind": "effort",
+    "text": "2 clicks, 0 fields typed, 3 screens (/months/cmwxh92em0001azgby32qp24y → /months → /months/[id])"
+  },
+  {
+    "task": "P09",
+    "kind": "unsaved changes",
+    "text": "typed 480, left via the back link with no warning; on return furnace oil is \"470\""
+  },
+  {
+    "task": "P09 submit",
+    "kind": "dialog",
+    "text": "Submit for review A reviewer will check this month. You can't change it while it waits, unless they send it back. Confirm the items you left blank were not used this month Coal: not used this month Petroleum coke: not used this month Flags Nothing unusual was flagged. Cancel Submit Month"
+  },
+  {
+    "task": "P09 submit",
+    "kind": "screenshot",
+    "text": "07-owner-submit-dialog-grinding-unit.jpg"
+  },
+  {
+    "task": "submit dialog",
+    "kind": "keyboard",
+    "text": "submit-not-used-coal → submit-not-used-petcoke → Cancel → Close → submit-not-used-coal → submit-not-used-petcoke"
+  },
+  {
+    "task": "P09 submit",
+    "kind": "escape",
+    "text": "dialog open after Escape: true"
+  },
+  {
+    "task": "P09",
+    "kind": "after submit",
+    "text": "header text: P09 Nimbus Durgapur Grinding Unit: October 2026 / Waiting for review; page says \"This month can't be changed now.\""
+  },
+  {
+    "task": "P09",
+    "kind": "screenshot",
+    "text": "08-owner-submitted.jpg"
+  },
+  {
+    "task": "Data owner: submit (grinding unit)",
+    "kind": "effort",
+    "text": "5 clicks, 0 fields typed, 2 screens (/months/cmwxh92em0001azgby32qp24y → /months/[id])"
+  },
+  {
+    "task": "import",
+    "kind": "screenshot",
+    "text": "09-owner-import-choose.jpg"
+  },
+  {
+    "task": "import",
+    "kind": "preview",
+    "text": "Read the pasted table: header on line 1, 4 rows below it. Line In the file Reads as What happens 2 Furnace oil (HAG) 655 MT Furnace oil 655 t Note: HAG Your answer \"MT\" usually means metric tonnes. Confirm it means tonnes (t), not million tonnes. Yes, tonnes Skip 3 HSD 79 KL Diesel (HSD) 79 kL Ready 4 Power purchased 41,80,000 kWh Grid electricity 41,80,000 kWh Ready 5 Coal 0 MT Coal 0 t Your answer \"MT\" usually means metric tonnes. Confirm it means tonnes (t), not million tonnes. Yes, tonnes Skip The form already has different values. Choose for each: Diesel (HSD) Keep 74900 L Use file's 79 kL Grid electricity Keep 4075 MWh Use file's 41,80,000 kWh Answer 2 questions and 2 choices above to continue."
+  },
+  {
+    "task": "import",
+    "kind": "screenshot",
+    "text": "10-owner-import-preview-paste.jpg"
+  },
+  {
+    "task": "import",
+    "kind": "conflicts",
+    "text": "The form already has different values. Choose for each: Furnace oil Keep 614 t Use file's 655 t Diesel (HSD) Keep 74900 L Use file's 79 kL Grid electricity Keep 4075 MWh Use file's 41,80,000 kWh"
+  },
+  {
+    "task": "import",
+    "kind": "summary",
+    "text": "Will fill: Furnace oil, Diesel (HSD), Grid electricity, Coal."
+  },
+  {
+    "task": "import",
+    "kind": "after apply",
+    "text": "diesel \"79\", coal \"0\"; save button \"Save Draft\""
+  },
+  {
+    "task": "import",
+    "kind": "screenshot",
+    "text": "11-owner-form-after-import.jpg"
+  },
+  {
+    "task": "Data owner: continue a draft and import by pasting from Excel",
+    "kind": "effort",
+    "text": "11 clicks, 1 fields typed, 3 screens (/plants → /months → /months/[id])"
+  },
+  {
+    "task": "Deepak",
+    "kind": "landing",
+    "text": "lands on /plants; is there any sign of the sent-back month here? false"
+  },
+  {
+    "task": "Deepak",
+    "kind": "list row",
+    "text": "October 2026 Sent back Fix and Resubmit"
+  },
+  {
+    "task": "Deepak",
+    "kind": "comment",
+    "text": "Sent back by Vikram Joshi \"Diesel is well above September. Please check whether the mining contractor's fuel is included.\" 10 Nov 2026, 12:50"
+  },
+  {
+    "task": "Deepak",
+    "kind": "flags shown while fixing",
+    "text": "Diesel (HSD) changed by +54.87% from September 2026, the last approved month."
+  },
+  {
+    "task": "Deepak",
+    "kind": "screenshot",
+    "text": "12-owner-sent-back.jpg"
+  },
+  {
+    "task": "Data owner: deal with a sent-back month",
+    "kind": "effort",
+    "text": "4 clicks, 1 fields typed, 3 screens (/plants → /months → /months/[id])"
+  },
+  {
+    "task": "Karthik",
+    "kind": "list rows",
+    "text": "September 2026 Sent back Fix and Resubmit | October 2026 Waiting for review View"
+  },
+  {
+    "task": "Karthik",
+    "kind": "reopen banner",
+    "text": "Reopened by Meera Iyer \"Auditor's query: the September diesel bill covers two months. Please enter September's share only.\" 10 Nov 2026, 15:00"
+  },
+  {
+    "task": "Karthik",
+    "kind": "who else owns this plant?",
+    "text": "page mentions Priya: false"
+  },
+  {
+    "task": "Karthik",
+    "kind": "screenshot",
+    "text": "13-owner-reopened-fixing.jpg"
+  },
+  {
+    "task": "Two-owner plant: fix the month Meera reopened",
+    "kind": "effort",
+    "text": "4 clicks, 2 fields typed, 3 screens (/plants → /months → /months/[id])"
+  },
+  {
+    "task": "Sasmita",
+    "kind": "list row",
+    "text": "October 2026 Waiting for review View"
+  },
+  {
+    "task": "Sasmita",
+    "kind": "waiting view",
+    "text": "status \"Waiting for review\"; says how long it has waited or who reviews it: 2"
+  },
+  {
+    "task": "Sasmita",
+    "kind": "screenshot",
+    "text": "14-owner-waiting-view.jpg"
+  },
+  {
+    "task": "Grinding unit owner: check October's status",
+    "kind": "effort",
+    "text": "2 clicks, 0 fields typed, 3 screens (/plants → /months → /months/[id])"
+  },
+  {
+    "task": "Priya",
+    "kind": "landing",
+    "text": "lands on /plants; sidebar: Dashboard, Monthly data, Review, Plants, Emission factors"
+  },
+  {
+    "task": "Priya",
+    "kind": "own months",
+    "text": "P05 Sep: September 2026 Waiting for review View | P05 Oct: October 2026 Waiting for review View"
+  },
+  {
+    "task": "Priya",
+    "kind": "queue",
+    "text": "P06 Nimbus Baloda Bazar Works October 2026 Deepak Sahu 26 Nov 2026, 17:07 1 flag Review || P05 Nimbus Ariyalur Works September 2026 Karthik Raja 26 Nov 2026, 17:07 1 flag Another reviewer must review this || P04 Nimbus Nalgonda Works October 2026 Lakshmi Reddy 18 Nov 2026, 16:30 None Review || P05 Nimbus Ariyalur Works October 2026 Karthik Raja 21 Nov 2026, 16:40 None Another reviewer must review this || P08 Nimbus Paradip Grinding Unit October 2026 Sasmita Mohanty 24 Nov 2026, 17:10 None Review || P09 Nimbus Durgapur Grinding Unit October 2026 Arijit Ghosh 26 Nov 2026, 17:06 None Review"
+  },
+  {
+    "task": "Priya",
+    "kind": "screenshot",
+    "text": "15-priya-queue.jpg"
+  },
+  {
+    "task": "Priya",
+    "kind": "own plant in review",
+    "text": "blocked notice: \"You are a data owner of this plant, so another reviewer must review this month.\""
+  },
+  {
+    "task": "Priya",
+    "kind": "screenshot",
+    "text": "16-priya-own-plant-blocked.jpg"
+  },
+  {
+    "task": "Priya: see her own plant's months, then her review queue",
+    "kind": "effort",
+    "text": "3 clicks, 0 fields typed, 4 screens (/plants → /months → /review → /months/[id])"
+  },
+  {
+    "task": "P04 review",
+    "kind": "what the reviewer sees",
+    "text": "flags: \"Nothing unusual was flagged.\"; previous column: \"September 2026 (last approved)\"; grid row: \"Grid electricity 1,23,00,000 kWh = 12,300 MWh 13,487 MWh TSSPDCL; As per bill\"; source of the figures shown: imported? true"
+  },
+  {
+    "task": "P04 review",
+    "kind": "screenshot",
+    "text": "17-reviewer-clean-imported-month.jpg"
+  },
+  {
+    "task": "P04 review",
+    "kind": "feedback",
+    "text": "after approve: on /review; toast seen: true"
+  },
+  {
+    "task": "Priya: approve a clean month (P04, imported)",
+    "kind": "effort",
+    "text": "3 clicks, 0 fields typed, 3 screens (/months/cmwxh6h9a00wzaz2jnli6eeb6 → /review → /months/[id])"
+  },
+  {
+    "task": "Vikram",
+    "kind": "queue",
+    "text": "P06 Nimbus Baloda Bazar Works October 2026 Deepak Sahu 26 Nov 2026, 17:07 1 flag Review || P05 Nimbus Ariyalur Works September 2026 Karthik Raja 26 Nov 2026, 17:07 1 flag Review || P05 Nimbus Ariyalur Works October 2026 Karthik Raja 21 Nov 2026, 16:40 None Review || P08 Nimbus Paradip Grinding Unit October 2026 Sasmita Mohanty 24 Nov 2026, 17:10 None Review || P09 Nimbus Durgapur Grinding Unit October 2026 Arijit Ghosh 26 Nov 2026, 17:06 None Review"
+  },
+  {
+    "task": "Vikram",
+    "kind": "screenshot",
+    "text": "18-vikram-queue.jpg"
+  },
+  {
+    "task": "review queue",
+    "kind": "a11y",
+    "text": "pointer cursor but not keyboard-focusable: tr[review-row-P06-2026-10], td, span, tr[review-row-P05-2026-09], tr[review-row-P05-2026-10], tr[review-row-P08-2026-10]"
+  },
+  {
+    "task": "Vikram: open the queue",
+    "kind": "effort",
+    "text": "1 clicks, 0 fields typed, 2 screens (/plants → /review)"
+  },
+  {
+    "task": "P06 review",
+    "kind": "flags",
+    "text": "Diesel (HSD) changed by +54.87% from September 2026, the last approved month."
+  },
+  {
+    "task": "P06 review",
+    "kind": "diesel row (this month vs last approved)",
+    "text": "Diesel (HSD) 2,00,400 L 1,29,400 L Includes the mining contractor's diesel for October; checked with the contractor's statement."
+  },
+  {
+    "task": "P06 review",
+    "kind": "owner's explanation visible next to the value",
+    "text": "true"
+  },
+  {
+    "task": "P06 review",
+    "kind": "history",
+    "text": "Submitted by Deepak Sahu (Plant data owner) 7 Nov 2026, 15:50 · now waiting for review Sent back by Vikram Joshi (Reviewer) \"Diesel is well above September. Please check whether the mining contractor's fuel is included.\" 10 Nov 2026, 12:50 · now sent back Submitted by Deepak Sahu (Plant data owner) Changed diesel (HSD) note from none to Includes the mining contractor's diesel for October; checked with the contractor's statement. 26 Nov 2026, 17:07 · now waiting for review"
+  },
+  {
+    "task": "P06 review",
+    "kind": "approve disabled before comment",
+    "text": "true"
+  },
+  {
+    "task": "P06 review",
+    "kind": "screenshot",
+    "text": "19-reviewer-flagged-month.jpg"
+  },
+  {
+    "task": "review month",
+    "kind": "keyboard",
+    "text": "Dashboard → Review → Plants → Emission factors → Toggle navigation → Vikram JoshiReviewer · Nimbus Ce → Review → Audit trail → review-comment → (body)"
+  },
+  {
+    "task": "Vikram: review the flagged month (P06) and approve it with a comment",
+    "kind": "effort",
+    "text": "2 clicks, 1 fields typed, 2 screens (/review → /months/[id])"
+  },
+  {
+    "task": "P08 review",
+    "kind": "grinding unit view",
+    "text": "rows: September 2026 (last approved) | Coal Not used this month N/A  | N/A | Petroleum coke Not used this month N/A  | N/A | Furnace oil 500 t 496 t  | 496 t"
+  },
+  {
+    "task": "Vikram: send one back (P08)",
+    "kind": "effort",
+    "text": "2 clicks, 1 fields typed, 2 screens (/review → /months/[id])"
+  },
+  {
+    "task": "Vikram",
+    "kind": "empty queue",
+    "text": "not empty"
+  },
+  {
+    "task": "Vikram",
+    "kind": "screenshot",
+    "text": "(screenshot removed: taken mid-way through an aborted script run)"
+  },
+  {
+    "task": "Vikram: approve the rest of the queue",
+    "kind": "effort",
+    "text": "0 clicks, 0 fields typed, 1 screens (/review)"
+  },
+  {
+    "task": "Vikram",
+    "kind": "time",
+    "text": "whole queue in 4 s of machine time; 2 months handled"
+  },
+  {
+    "task": "Vikram",
+    "kind": "stale list",
+    "text": "After approving, the review queue first shows the cached list, still including the month just approved, then refetches. The script clicked a row that then vanished. On a slow connection a reviewer can open a month that is already approved. Database confirmed each month was approved once (P05 Sep, P05 Oct, P09 Oct)."
+  },
+  {
+    "task": "Vikram",
+    "kind": "empty queue",
+    "text": "Plant Month Submitted Flags Action Nothing waiting for review Months appear here as soon as a plant submits them."
+  },
+  {
+    "task": "Vikram",
+    "kind": "screenshot",
+    "text": "21-vikram-queue-empty.jpg"
+  },
+  {
+    "task": "Vikram: approve the rest of the queue",
+    "kind": "effort",
+    "text": "1 clicks, 0 fields typed, 2 screens (/plants → /review)"
+  },
+  {
+    "task": "Sasmita",
+    "kind": "landing",
+    "text": "on /plants; any sign of the sent-back month: false"
+  },
+  {
+    "task": "Sasmita",
+    "kind": "list row",
+    "text": "October 2026 Sent back Fix and Resubmit"
+  },
+  {
+    "task": "Sasmita",
+    "kind": "comment",
+    "text": "Sent back by Vikram Joshi \"Furnace oil is a little above what the HAG usually uses. Please confirm against the stores issue slip.\" 26 Nov 2026, 17:08"
+  },
+  {
+    "task": "Sasmita",
+    "kind": "values as typed",
+    "text": "furnace oil \"500\", grid \"30,60,000\" kWh"
+  },
+  {
+    "task": "Grinding unit owner: deal with the sent-back month",
+    "kind": "effort",
+    "text": "4 clicks, 1 fields typed, 3 screens (/plants → /months → /months/[id])"
+  },
+  {
+    "task": "Meera",
+    "kind": "landing",
+    "text": "on /plants"
+  },
+  {
+    "task": "Meera",
+    "kind": "readiness",
+    "text": "Not ready for the board. Q3 FY 2026-27: 7 of 9 plant-months approved. The totals below include approved months only, so they are partial. November 2026 and December 2026 have not ended yet."
+  },
+  {
+    "task": "Meera",
+    "kind": "company",
+    "text": "S1 9,72,549.6 t CO2 | S2 63,303.5 t CO2 | total 10,35,853.1 t CO2"
+  },
+  {
+    "task": "Meera",
+    "kind": "missing",
+    "text": "Waiting for review (1) P08 Oct 2026 Being entered (1) P07 Oct 2026"
+  },
+  {
+    "task": "Meera",
+    "kind": "screenshot",
+    "text": "22-meera-dashboard-q3.jpg"
+  },
+  {
+    "task": "Meera",
+    "kind": "Q2 readiness",
+    "text": "Ready for the board: all 27 plant-months of Q2 FY 2026-27 are approved. Every figure below has been approved."
+  },
+  {
+    "task": "Meera",
+    "kind": "screenshot",
+    "text": "23-meera-dashboard-q2.jpg"
+  },
+  {
+    "task": "Meera: what can go to the board?",
+    "kind": "effort",
+    "text": "3 clicks, 0 fields typed, 2 screens (/plants → /dashboard)"
+  },
+  {
+    "task": "Meera",
+    "kind": "audit",
+    "text": "Scope 1 2,56,814.8 t CO2; approved by: Approved by Vikram Joshi (Reviewer) on 6 Oct 2026, 12:00: \"Checked against the fuel and power bills; the flagged figures are correct as entered.\" Submitted by Ravi Meena on 5 Oct 2026, 15:00 Totals are calculated in kg before rounding; tonnes are rounded to one decimal place."
+  },
+  {
+    "task": "Meera",
+    "kind": "trace row",
+    "text": "Coal 33896 t 33,896 t 2,441 per t 8,27,40,136 2006 IPCC 2006 Guidelines, Vol. 2, Ch. 1, default net calorific value x default CO2 factor: other bituminous coal, 25.8 GJ/t x 94.6 kg/GJ Ravi Meena 4 Oct 2026, 10:40"
+  },
+  {
+    "task": "Meera",
+    "kind": "screenshot",
+    "text": "24-meera-audit-trail.jpg"
+  },
+  {
+    "task": "Meera",
+    "kind": "can she get back to the dashboard?",
+    "text": "back link says \"Back to the month\" (goes to the month, not the dashboard)"
+  },
+  {
+    "task": "Meera: answer an auditor's 'where did this number come from?'",
+    "kind": "effort",
+    "text": "1 clicks, 0 fields typed, 2 screens (/dashboard → /months/[id]/audit)"
+  },
+  {
+    "task": "Meera",
+    "kind": "reopen from the audit page?",
+    "text": "reopen control on the audit trail: false"
+  },
+  {
+    "task": "Meera",
+    "kind": "screenshot",
+    "text": "25-meera-reopen-panel.jpg"
+  },
+  {
+    "task": "Meera",
+    "kind": "after reopen",
+    "text": "status \"Sent back\"; return comment shown to Meera: true"
+  },
+  {
+    "task": "Meera: reopen a month (P02 October)",
+    "kind": "effort",
+    "text": "6 clicks, 1 fields typed, 4 screens (/months/cmwxh6g6c00q4az2jeor3ybsr/audit → /months/[id]/audit → /dashboard → /months/[id])"
+  },
+  {
+    "task": "Meera",
+    "kind": "dashboard after reopen",
+    "text": "Not ready for the board. Q3 FY 2026-27: 6 of 9 plant-months approved. The totals below include approved months only, so they are partial. November 2026 and December 2026 have not ended yet. | S1 7,69,220.7 t CO2 | P02 Oct cell: Sent back"
+  },
+  {
+    "task": "dashboard",
+    "kind": "keyboard",
+    "text": "Dashboard → Review → Plants → Emission factors → Toggle navigation → Meera IyerHead of Sustainability → Q3 FY 2026-27 → P08 Oct 2026 → P02 Oct 2026 → P07 Oct 2026 → S1 2,59,993.2 tS2 3,037.5 t → Sent back"
+  },
+  {
+    "task": "laptop month-form",
+    "kind": "layout",
+    "text": "sideways overflow 0px; month-save visible without scrolling; month-submit-open visible without scrolling"
+  },
+  {
+    "task": "laptop month-form",
+    "kind": "screenshot",
+    "text": "36-laptop-month-form.jpg"
+  },
+  {
+    "task": "month form (keyboard)",
+    "kind": "keyboard",
+    "text": "Monthly data → Plants → Emission factors → Toggle navigation → Hetal PatelPlant data owner · Ni → Monthly data → Audit trail → Coal quantity → line-coal-na → Coal note → Petroleum coke quantity → line-petcoke-na → Petroleum coke note → Furnace oil quantity → line-furnace_oil-na → Furnace oil note → Diesel (HSD) quantity → L"
+  },
+  {
+    "task": "month form",
+    "kind": "inline error while typing",
+    "text": "Coal Optional \"12a\" is not a number we can read. Enter a number such as 35000, 11,000 or 1,23,00,000, or N/A. t N/A"
+  },
+  {
+    "task": "month form",
+    "kind": "input focus style",
+    "text": "border rgb(226, 232, 240), shadow rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+  },
+  {
+    "task": "month form",
+    "kind": "N/A checkbox by keyboard",
+    "text": "checked after Space: true"
+  },
+  {
+    "task": "submit dialog",
+    "kind": "focus on open",
+    "text": "submit-close"
+  },
+  {
+    "task": "submit dialog",
+    "kind": "escape",
+    "text": "dialog open 700 ms after Escape: false; focus returned to: BODY"
+  },
+  {
+    "task": "import dialog",
+    "kind": "escape",
+    "text": "dialog open 700 ms after Escape: false; focus returned to: BODY"
+  },
+  {
+    "task": "sign-in",
+    "kind": "user button focus style",
+    "text": "background rgb(247, 250, 252), outline none 1px, shadow none"
+  },
+  {
+    "task": "laptop review-queue",
+    "kind": "a11y",
+    "text": "pointer cursor but not keyboard-focusable: tr[review-row-P04-2026-10], td, span, tr[review-row-P05-2026-10], tr[review-row-P08-2026-10]"
+  },
+  {
+    "task": "laptop review-queue",
+    "kind": "layout",
+    "text": "sideways overflow 0px; "
+  },
+  {
+    "task": "laptop review-queue",
+    "kind": "screenshot",
+    "text": "37-laptop-review-queue.jpg"
+  },
+  {
+    "task": "laptop review-month",
+    "kind": "layout",
+    "text": "sideways overflow 0px; review-approve visible without scrolling"
+  },
+  {
+    "task": "laptop review-month",
+    "kind": "screenshot",
+    "text": "38-laptop-review-month.jpg"
+  },
+  {
+    "task": "laptop dashboard",
+    "kind": "layout",
+    "text": "sideways overflow 0px; dashboard-readiness visible without scrolling"
+  },
+  {
+    "task": "laptop dashboard",
+    "kind": "screenshot",
+    "text": "39-laptop-dashboard.jpg"
+  },
+  {
+    "task": "laptop audit-trail",
+    "kind": "layout",
+    "text": "sideways overflow 0px; audit-scope1 visible without scrolling"
+  },
+  {
+    "task": "laptop audit-trail",
+    "kind": "screenshot",
+    "text": "40-laptop-audit-trail.jpg"
+  }
 ]

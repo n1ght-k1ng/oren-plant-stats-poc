@@ -9,7 +9,7 @@ A hard look at the app as each role would use it, before submission. Nothing her
 - **Screens:** desktop 1440×900, laptop 1366×768, phone 390×844.
 - **Contrast:** computed from the colour tokens in `src/styles/globals.css` against WCAG AA (4.5:1 for normal text).
 - **Not covered:**
-  - **Laptop screenshots for 4 screens and the month form's keyboard walk.** Docker Desktop was killed by the system for lack of memory part-way through ([what happened](#what-stopped-the-run)).
+  - *(Completed later on the reseeded local database: the four laptop screenshots and the month form's keyboard walk, after Docker Desktop had been killed for lack of memory part-way through. See [what happened](#what-stopped-the-run).)*
   - **Error and offline states, screen readers, zoom to 200%.**
 
 **Ravi has nothing to do in the demo.** All seven of his months are approved, so he can't start, type or fix anything. His tasks were run as the owners whose October is in each state:
@@ -279,7 +279,9 @@ The badge colours and the error and body text all pass. These colours come from 
 
 **A3. No skip link.** **Minor.** Affects keyboard users. Every page starts with the sidebar, the toggle and the user menu before reaching content (five stops, then content). *Fix:* a "Skip to content" link.
 
-**A4. Labels are complete.** No unlabelled controls were found on any page checked. Every page has one H1, and dialogs hold focus correctly. *Not verified:* whether Escape closes the submit dialog. It was still open 0 ms after Escape, which may only be its closing animation, and the follow-up check was lost when Docker stopped.
+**A4. Labels are complete, and the form works by keyboard.** No unlabelled controls were found on any page checked. Every page has one H1, and dialogs hold focus. On the month form, Tab follows the lines in order (quantity, N/A, note), Space toggles N/A, and an unreadable number is explained in place as you type. Escape closes both the submit and import dialogs (checked 700 ms later).
+
+**A5. Closing a dialog drops focus to the top of the page.** **Minor.** Affects keyboard and screen-reader users. After Escape on the submit or import dialog, focus goes to the page body rather than back to the button that opened it, so a keyboard user loses their place. *Fix:* return focus to the opening button on close.
 
 ### Phone and laptop
 
@@ -287,12 +289,12 @@ The badge colours and the error and body text all pass. These colours come from 
 |---|---|---|
 | Sign-in | Fine ([26](ux/26-phone-sign-in.jpg)) | Fine ([34](ux/34-laptop-sign-in.jpg)) |
 | Monthly data | Fine ([27](ux/27-phone-monthly-data.jpg)) | Fine ([35](ux/35-laptop-monthly-data.jpg)) |
-| Month form | Very long (U9) ([28](ux/28-phone-month-form.jpg)) | *Not captured* |
+| Month form | Very long (U9) ([28](ux/28-phone-month-form.jpg)) | Save and Submit visible without scrolling ([36](ux/36-laptop-month-form.jpg)) |
 | Navigation | Drawer works ([29](ux/29-phone-nav-open.jpg)) | n/a |
-| Review queue | Review button cut off (U26) ([30](ux/30-phone-review-queue.jpg)) | *Not captured* |
-| Review month | Usable ([31](ux/31-phone-review-month.jpg)) | *Not captured* |
-| Dashboard | Good: banner and totals first ([32](ux/32-phone-dashboard.jpg)) | *Not captured* |
-| Audit trail | Readable; the calculation table scrolls ([33](ux/33-phone-audit-trail.jpg)) | *Not captured* |
+| Review queue | Review button cut off (U26) ([30](ux/30-phone-review-queue.jpg)) | Fine ([37](ux/37-laptop-review-queue.jpg)) |
+| Review month | Usable ([31](ux/31-phone-review-month.jpg)) | Approve visible without scrolling ([38](ux/38-laptop-review-month.jpg)) |
+| Dashboard | Good: banner and totals first ([32](ux/32-phone-dashboard.jpg)) | Banner and totals above the fold ([39](ux/39-laptop-dashboard.jpg)) |
+| Audit trail | Readable; the calculation table scrolls ([33](ux/33-phone-audit-trail.jpg)) | Totals above the fold ([40](ux/40-laptop-audit-trail.jpg)) |
 
 **L1. The page-title breadcrumb is cut to one letter on phones.** **Polish.** It reads "D…" for Dashboard and "A…" for Audit ([32](ux/32-phone-dashboard.jpg), [33](ux/33-phone-audit-trail.jpg)). *Fix:* hide it on narrow screens; the page has its own heading.
 

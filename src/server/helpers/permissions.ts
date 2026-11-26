@@ -1,6 +1,12 @@
 import { TRPCError } from "@trpc/server";
 
-import { type MonthAction, type PermissionPlant, type PermissionUser, checkPermission } from "@/lib/permissions";
+import {
+	type MonthAction,
+	type PermissionMonth,
+	type PermissionPlant,
+	type PermissionUser,
+	checkPermission,
+} from "@/lib/permissions";
 import type { Role } from "@/lib/roles";
 
 /**
@@ -11,8 +17,9 @@ export function requirePermission(
 	user: PermissionUser,
 	plant: PermissionPlant,
 	action: MonthAction,
+	month?: PermissionMonth,
 ): { actingRole: Role | null } {
-	const result = checkPermission(user, plant, action);
+	const result = checkPermission(user, plant, action, month);
 	if (result.allowed) {
 		return { actingRole: result.actingRole };
 	}

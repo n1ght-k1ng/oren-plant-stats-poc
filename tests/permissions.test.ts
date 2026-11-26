@@ -1,6 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { describe, expect, it } from "vitest";
 
+import type { ReportStatus } from "@prisma/client";
+
 import { type MonthAction, type PermissionPlant, type PermissionUser, checkPermission } from "@/lib/permissions";
 import { ROLES } from "@/lib/roles";
 import { requirePermission } from "@/server/helpers/permissions";
@@ -33,10 +35,11 @@ type Expected =
 	| "NOT_DATA_OWNER"
 	| "NOT_REVIEWER"
 	| "OWN_PLANT"
-	| "NOT_HEAD";
+	| "NOT_HEAD"
+	| "VALUES_NOT_SUBMITTED";
 
-function outcome(name: Name, plant: PermissionPlant, action: MonthAction): Expected {
-	const result = checkPermission(users[name], plant, action);
+function outcome(name: Name, plant: PermissionPlant, action: MonthAction, status?: ReportStatus): Expected {
+	const result = checkPermission(users[name], plant, action, status && { status });
 	if (!result.allowed) {
 		return result.reason;
 	}
@@ -44,8 +47,18 @@ function outcome(name: Name, plant: PermissionPlant, action: MonthAction): Expec
 }
 
 // Plant P05 is owned by Karthik and Priya. Priya is also a reviewer.
-const P05_RULES: Record<MonthAction, Record<Name, Expected>> = {
-	view: { ravi: "view", karthik: "view", priya: "view", vikram: "view", meera: "view", rohan: "OTHER_COMPANY" },
+const everyoneInNimbus: Record<Name, Expected> = {
+	ravi: "view",
+	karthik: "view",
+	priya: "view",
+	vikram: "view",
+	meera: "view",
+	rohan: "OTHER_COMPANY",
+};
+
+const P05_RULES: Record<Exclude<MonthAction, "viewValues">, Record<Name, Expected>> = {
+	viewStatus: everyoneInNimbus,
+	viewHistory: everyoneInNimbus,
 	open: {
 		ravi: "NOT_DATA_OWNER",
 		karthik: "DATA_OWNER",
@@ -103,6 +116,45 @@ describe("the full table for P05", () => {
 
 	it.each(cases)("%s by %s: %s", (action, name, expected) => {
 		expect(outcome(name, P05, action)).toBe(expected);
+	});
+});
+
+describe("seeing a month's current values (R1)", () => {
+	const hidden = "VALUES_NOT_SUBMITTED";
+	// Columns: DRAFT, SUBMITTED, RETURNED, APPROVED.
+	const VALUES: Record<Name, [Expected, Expected, Expected, Expected]> = {
+		karthik: ["view", "view", "view", "view"],
+		priya: ["view", "view", "view", "view"],
+		ravi: [hidden, "view", hidden, "view"],
+		vikram: [hidden, "view", hidden, "view"],
+		meera: [hidden, "view", hidden, "view"],
+		rohan: ["OTHER_COMPANY", "OTHER_COMPANY", "OTHER_COMPANY", "OTHER_COMPANY"],
+	};
+	const STATUSES: ReportStatus[] = ["DRAFT", "SUBMITTED", "RETURNED", "APPROVED"];
+	const cases = Object.entries(VALUES).flatMap(([name, row]) =>
+		STATUSES.map((status, index) => [name as Name, status, row[index]] as const),
+	);
+
+	it.each(cases)("%s on a %s month: %s", (name, status, expected) => {
+		expect(outcome(name, P05, "viewValues", status)).toBe(expected);
+	});
+
+	it("keeps a draft's half-typed figures from reviewers and Meera, and says why", () => {
+		expect(checkPermission(users.meera, P05, "viewValues", { status: "DRAFT" })).toEqual({
+			allowed: false,
+			reason: "VALUES_NOT_SUBMITTED",
+			message:
+				"The plant is still entering this month's figures. You can see them once it is submitted, and earlier submissions in the history.",
+		});
+	});
+
+	it("still lets them read the status and every earlier submission of a month being fixed", () => {
+		expect(outcome("vikram", P05, "viewStatus")).toBe("view");
+		expect(outcome("vikram", P05, "viewHistory")).toBe("view");
+	});
+
+	it("refuses to decide without knowing the month's status", () => {
+		expect(() => checkPermission(users.vikram, P05, "viewValues")).toThrow('needs the month for "viewValues"');
 	});
 });
 
@@ -180,7 +232,7 @@ describe("edge cases (R2 to R4)", () => {
 describe("requirePermission on the server", () => {
 	function refusal(user: PermissionUser, plant: PermissionPlant, action: MonthAction): TRPCError {
 		try {
-			requirePermission(user, plant, action);
+			requirePermission(user, plant, action, { status: "DRAFT" });
 		} catch (error) {
 			if (error instanceof TRPCError) {
 				return error;
@@ -195,7 +247,7 @@ describe("requirePermission on the server", () => {
 	});
 
 	it("hides another company's month as NOT_FOUND", () => {
-		expect(refusal(users.rohan, P05, "view")).toMatchObject({
+		expect(refusal(users.rohan, P05, "viewStatus")).toMatchObject({
 			code: "NOT_FOUND",
 			message: "We could not find this month.",
 		});
@@ -206,6 +258,7 @@ describe("requirePermission on the server", () => {
 			code: "FORBIDDEN",
 			message: "You are a data owner of this plant, so another reviewer must review this month.",
 		});
+		expect(requirePermission(users.vikram, P05, "viewValues", { status: "SUBMITTED" })).toEqual({ actingRole: null });
 		expect(refusal(users.vikram, P05, "reopen")).toMatchObject({
 			code: "FORBIDDEN",
 			message: "Only the Head of Sustainability can reopen an approved month.",

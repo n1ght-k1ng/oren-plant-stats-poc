@@ -96,7 +96,7 @@ DECISIONS.md is the source of truth; if code and it disagree, ask me.
 - Small changes, one flow at a time. Stop after each and summarise.
 - Role checks server-side always. Never trust the client.
 - Write or update tests before saying something is done; run them.
-- **Before every commit, run the full suite, not just the tests for the change:** `npm test` (against the test database), `npm run typecheck`, `npm run lint`, and `npm run test:e2e` when the change touches a page, a flow or the e2e files. Two commits in the UX fixes ran only their new checks and broke the main-loop e2e test and a unit test unnoticed (fixed in `a14f5ad` and `20e7622`).
+- **Before every commit, run the full suite, not just the tests for the change:** `npm test` (against the test database), `npm run typecheck`, `npm run lint`, and `npm run test:e2e` when the change touches a page, a flow or the e2e files. Two commits in the UX fixes ran only their new checks and broke the main-loop e2e test and a unit test unnoticed (fixed in `e32b46a` and `a724a13`).
 - Run each check as its own command and read its result before the next. A pass must say it passed: "typecheck errors: 0", lint "Checked N files… No fixes applied" with no "Found" line, a test count with no failures. Blank or cropped output counts as not checked.
 - Decimals for quantities/CO2, never floats.
 - Don't add dependencies without asking.

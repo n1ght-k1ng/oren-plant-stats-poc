@@ -40,7 +40,7 @@
 
 ## 2026-11-26: a commit that passed "all checks" had a lint error
 
-**Where:** commit `0d6ea52` (step 4.1, import parsing). Nothing was deployed. Fixed in `48fc53a` a few minutes later.
+**Where:** commit `081e7bd` (step 4.1, import parsing). Nothing was deployed. Fixed in `b05f4b3` a few minutes later.
 
 ### What happened
 - Claude ran the tests, then lint and the commit in a single command. Lint's output was cut to its last line with `tail -1`.
@@ -79,7 +79,7 @@
 
 ## 2026-11-26: two commits ran only their own tests and broke existing ones
 
-**Where:** commits `77b16d7` (U1) and `6cdc0e6` (U23), during the UX fixes. Nothing was deployed. Fixed in `a14f5ad` and `20e7622`.
+**Where:** commits `b37080f` (U1) and `3b23a3e` (U23), during the UX fixes. Nothing was deployed. Fixed in `e32b46a` and `a724a13`.
 
 ### What happened
 - For each UX fix, Claude ran the new Playwright check for that fix, the unit tests it thought were related, typecheck and lint, and then committed. It didn't run the whole unit suite or the whole e2e suite.
@@ -94,6 +94,6 @@
 - **The e2e suite is slow** (about two minutes), which made running only the new check tempting.
 
 ### What we changed
-- **`CLAUDE.md` rule** (`3d2716f`): before every commit, run the full suite: `npm test` against the test database, `npm run typecheck`, `npm run lint`, and `npm run test:e2e` when a page, flow or e2e file changed. Each runs as its own command, and a pass must say it passed.
-- **The two breaks were fixed in their own commits** (`a14f5ad`, `20e7622`), with messages saying what had been missed. The U38b check now opens its starting quarter by address, so it doesn't depend on other tests.
+- **`CLAUDE.md` rule** (`df4cd40`): before every commit, run the full suite: `npm test` against the test database, `npm run typecheck`, `npm run lint`, and `npm run test:e2e` when a page, flow or e2e file changed. Each runs as its own command, and a pass must say it passed.
+- **The two breaks were fixed in their own commits** (`e32b46a`, `a724a13`), with messages saying what had been missed. The U38b check now opens its starting quarter by address, so it doesn't depend on other tests.
 - Every commit since has run the full suite first.

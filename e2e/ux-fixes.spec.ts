@@ -337,11 +337,17 @@ test.describe("U29: an approved month never reappears in the queue", () => {
 			await new Promise((resolve) => setTimeout(resolve, 3000));
 			await route.continue();
 		});
-		const clicked = Date.now();
+		// The clock starts when the approval is saved, not at the click: the save itself takes longer on a deployed
+		// server far from its database, and that isn't what U29 is about.
+		const approved = page.waitForResponse((response) => /\/api\/trpc\/[^?]*review\.approve/.test(response.url()), {
+			timeout: 60_000,
+		});
 		await page.getByTestId("review-approve").click();
+		expect((await approved).ok()).toBe(true);
+		const saved = Date.now();
 		// Back on the queue promptly, without waiting for the slow refresh...
 		await page.waitForURL("**/review", { timeout: 1500 });
-		expect(Date.now() - clicked).toBeLessThan(1500);
+		expect(Date.now() - saved).toBeLessThan(1500);
 		// ...and the approved month is already gone from it.
 		await expect(
 			page.locator('[data-testid^="review-row-"]').first().or(page.getByText("Nothing waiting for review")),

@@ -76,3 +76,24 @@
 - **After stopping any process, confirm it is gone** by its PID (`ps -p <pid>`). If it is still there a few seconds after SIGTERM, use SIGKILL, check again, and only then report it stopped.
 - **Before starting a server, list what is already running** (`ps` for `next-server`, with each process's folder and port), so earlier orphans are caught.
 - **Both orphans were stopped with SIGKILL and confirmed gone.** Only one dev server now runs.
+
+## 2026-11-26: two commits ran only their own tests and broke existing ones
+
+**Where:** commits `77b16d7` (U1) and `6cdc0e6` (U23), during the UX fixes. Nothing was deployed. Fixed in `a14f5ad` and `20e7622`.
+
+### What happened
+- For each UX fix, Claude ran the new Playwright check for that fix, the unit tests it thought were related, typecheck and lint, and then committed. It didn't run the whole unit suite or the whole e2e suite.
+- **U1** sent each role to its own starting page. The main-loop e2e test's sign-in step still waited for `/plants`, so all six main-loop steps stopped at the first. Only the new `ux-fixes` checks had been run.
+- **U23** added a `reopened` field to each month in the owner's list. `tests/month.test.ts` compared the old shape exactly, so it failed. Only the review and dashboard tests had been run.
+- The breaks went unnoticed for 13 more commits after U1 and 11 after U23. They were found only at the full run at the end (1 of 394 unit tests and 2 of 22 e2e tests failing).
+- The same full run showed the new U38b check depended on which months other tests had created, so it could fail in a full run while passing alone.
+
+### Why it looked green
+- **The checks that ran were green.** Each commit message listed passing tests, but they were the tests for the change, not for everything the change touched.
+- **Nothing required the full suite.** You had asked for it before, but it wasn't written into `CLAUDE.md`, so it was missed.
+- **The e2e suite is slow** (about two minutes), which made running only the new check tempting.
+
+### What we changed
+- **`CLAUDE.md` rule** (`3d2716f`): before every commit, run the full suite: `npm test` against the test database, `npm run typecheck`, `npm run lint`, and `npm run test:e2e` when a page, flow or e2e file changed. Each runs as its own command, and a pass must say it passed.
+- **The two breaks were fixed in their own commits** (`a14f5ad`, `20e7622`), with messages saying what had been missed. The U38b check now opens its starting quarter by address, so it doesn't depend on other tests.
+- Every commit since has run the full suite first.

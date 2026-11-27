@@ -48,8 +48,9 @@ changes how plants enter data. I'd like the sustainability team's view.
 
 ## How I used AI
 
-Claude Code wrote most of the code and docs. I made the decisions, reviewed each step, and corrected it. Three of
-these corrections are written up in [INCIDENTS.md](docs/INCIDENTS.md).
+Claude Code wrote most of the code and docs. I made the decisions, reviewed each step, and corrected it. Four of
+these corrections are written up in [INCIDENTS.md](docs/INCIDENTS.md); Float vs Decimal is decision N1 in
+[DECISIONS.md](docs/DECISIONS.md).
 
 - **Float vs Decimal.** Its first schema used `Float`. I insisted on exact decimals (N1).
 - **Deleted drafts.** Asked to clear its test months, it deleted every month, including two drafts that weren't

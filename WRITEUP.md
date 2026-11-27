@@ -43,6 +43,9 @@ changes how plants enter data. I'd like the sustainability team's view.
   sample file's import.
 - **22 end-to-end tests** through the real screens: the submit, send back, approve and trace loop, an import, and
   each UX fix. They pass locally and against the production build on Neon.
+- **The live run found a deploy problem.** Vercel ran the functions in Washington (`iad1`) against Neon in
+  Singapore, so an approval took about 4.3 s and the e2e suite 9.4 min. Pinning them to `sin1` brought those to
+  0.19 s and 2.3 min.
 - **A harsh [UX review](docs/UX-REVIEW.md)** on laptop and phone. I made twelve fixes, each with a test, and for
   six I confirmed the test fails when the fix is undone.
 
